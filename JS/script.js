@@ -4,6 +4,7 @@ let main = {
       turn : 'w', // shows which player's urn is it
 	  selectedPiece : '', // stores the seleced piece on board
 	  selectedCell : new Array(2), // stores the cell selected
+	  previousMove : new Array(2), // stores the cells used in previous move
       canMove : [], // stores the cells where a piece can move
       board : new Array(9),	// stores the board data
       pieces : { // different chess pieces assigned to there unicode values
@@ -57,7 +58,14 @@ let main = {
 				for(let j = 0 ; j < 9 ; j++){
 					this.setPiece(i , j , "*");
 				}
-			}  
+			} 
+			
+			for(let i = 0 ; i < 2 ; i++){
+				main.variables.previousMove[i] = new Array(2);
+				for(let j = 0 ; j < 2 ; j++){
+					main.variables.previousMove[i][j] = -1;
+				}
+			}
 			
 			main.variables.board[1][1] = main.variables.board[1][8] = 'w_rook';
 			main.variables.board[1][2] = main.variables.board[1][7] = 'w_knight';
@@ -81,7 +89,7 @@ let main = {
 		
 		canMoveKnight : function(row , col){ // adds all the cells where the selected knoght can move
 			let turn = main.variables.turn;
-			
+
 			let x = row + 2, y = col + 1;
 			if(x <= 8 && y <= 8 && this.getPiece(x , y).charAt(0) != turn){
 				main.variables.canMove.push([x , y]);
@@ -131,7 +139,18 @@ let main = {
 				let row = main.variables.canMove[i][0];
 				let col = main.variables.canMove[i][1];
 				selectedCell = document.querySelector(`.row${row}.col${col}`);
-              	selectedCell.classList.remove('canMove');
+				if((row+col)%2){ // the cell is light color
+					if(this.getPiece(row , col) != "*")
+						selectedCell.classList.remove('canMoveLightCapture');
+					else
+						selectedCell.classList.remove('canMoveLight');
+				}
+				else{
+					if(this.getPiece(row , col) != "*")
+						selectedCell.classList.remove('canMoveDarkCapture');
+					else
+						selectedCell.classList.remove('canMoveDark');
+				}
 			}
 
 			// deleting all the cell entries where the piece can be moved
@@ -145,28 +164,140 @@ let main = {
 				let row = main.variables.canMove[i][0];
 				let col = main.variables.canMove[i][1];
 				selectedCell = document.querySelector(`.row${row}.col${col}`);
-              	selectedCell.classList.add('canMove');
+
+				if((row+col)%2){ // the cell is light color
+					if(this.getPiece(row , col) != "*")
+						selectedCell.classList.add('canMoveLightCapture');
+					else
+						selectedCell.classList.add('canMoveLight');
+				}
+				else{
+					if(this.getPiece(row , col) != "*")
+						selectedCell.classList.add('canMoveDarkCapture');
+					else
+						selectedCell.classList.add('canMoveDark');
+				}
 			}
+		},
+
+		removePreviousMove : function(){ // removes the previous move from the board
+			let prev = main.variables.previousMove;
+			if((prev[0][0]+prev[0][1])%2)
+				document.querySelector(`.row${prev[0][0]}.col${prev[0][1]}`).classList.remove('previousMoveLight');
+			else	
+				document.querySelector(`.row${prev[0][0]}.col${prev[0][1]}`).classList.remove('previousMoveDark');
+
+			if((prev[1][0]+prev[1][1])%2)
+				document.querySelector(`.row${prev[1][0]}.col${prev[1][1]}`).classList.remove('previousMoveLight');
+			else	
+				document.querySelector(`.row${prev[1][0]}.col${prev[1][1]}`).classList.remove('previousMoveDark');
+		},
+
+		addPreviousMove : function(){ // adds the selected move to the board
+			let prev = main.variables.previousMove;
+			if((prev[0][0]+prev[0][1])%2)
+				document.querySelector(`.row${prev[0][0]}.col${prev[0][1]}`).classList.add('previousMoveLight');
+			else	
+				document.querySelector(`.row${prev[0][0]}.col${prev[0][1]}`).classList.add('previousMoveDark');
+
+			if((prev[1][0]+prev[1][1])%2)
+				document.querySelector(`.row${prev[1][0]}.col${prev[1][1]}`).classList.add('previousMoveLight');
+			else	
+				document.querySelector(`.row${prev[1][0]}.col${prev[1][1]}`).classList.add('previousMoveDark');
 		},
 
 		moveSelectedPiece : function(row , col){ // moves the selected piece on board
 			this.setPiece(row , col , main.variables.selectedPiece);
-			this.setPiece(main.variables.selectedCell[0] , main.variables.selectedCell[1] , "*");
+
+			let prevRow = main.variables.selectedCell[0];
+			let prevCol = main.variables.selectedCell[1];
+			this.setPiece(prevRow, prevCol , "*");
  
+			if(main.variables.previousMove[0][0] != -1){
+				this.removePreviousMove();
+			}
+
+			main.variables.previousMove[0] = [prevRow , prevCol];
+			main.variables.previousMove[1] = [row , col];
+
+			this.addPreviousMove();
+
 			this.updateBoard();
+
+			if(main.variables.turn == 'w')
+				main.variables.turn = 'b';
+			else
+				main.variables.turn = 'w';
 		},
 
-		removePreviousSelectedCell : function(){
+		removePreviousSelectedCell : function(){ // removes the previously selected piece
 			// cell row and col is selected
 			let cell = main.variables.selectedCell;
 
 			if(main.variables.selectedPiece != ''){
 			// getting the div of previous selected cell and removing the selectedCell class from it
 				let chosenCell = document.querySelector(`.row${cell[0]}.col${cell[1]}`);
-				chosenCell.classList.remove('selectedCell');
+				if((cell[0]+cell[1])%2)
+					chosenCell.classList.remove('selectedCellLight');
+				else	
+					chosenCell.classList.remove('selectedCellDark');
 			}
 
 			main.variables.selectedPiece = '';
+		},
+
+		canMovePawn : function(row , col){
+			let turn = main.variables.turn;
+
+			if(turn == 'w'){
+				let x , y;
+				if(row == 2){
+					x = row+2 , y = col;
+					if(this.getPiece(x , y) == "*" && this.getPiece(x-1 , y) == "*"){ // can move if it's an empty cell
+						main.variables.canMove.push([x , y]);
+					}
+				}
+				x = row+1 , y = col;
+				if(x <= 8 && this.getPiece(x , y) == "*"){ // can move if it's an empty cell
+					main.variables.canMove.push([x , y]);
+				}
+
+				x = row+1 , y = col+1;
+				if(x <= 8 && y <= 8 && this.getPiece(x , y).charAt(0) == "b"){ // can move if it can capture a black piece
+					main.variables.canMove.push([x , y]);
+				}
+
+				x = row+1 , y = col-1;
+				if(x <= 8 && y >= 0 && this.getPiece(x , y).charAt(0) == "b"){ // can move if it can capture a black piece
+					main.variables.canMove.push([x, y]);
+				} 
+			}
+
+			//-------------------------------------------------------------------------------------------------------------
+
+			else{
+				let x , y;
+				if(row == 7){
+					x = row-2 , y = col;
+					if(this.getPiece(x , y) == "*" && this.getPiece(x+1 , y) == "*"){ // can move if it's an empty cell
+						main.variables.canMove.push([x , y]);
+					}
+				}
+				x = row-1 , y = col;
+				if(x >= 0 && this.getPiece(x , y) == "*"){ // can move if it's an empty cell
+					main.variables.canMove.push([x , y]);
+				}
+
+				x = row-1 , y = col+1;
+				if(x >= 0 && y <= 8 && this.getPiece(x , y).charAt(0) == "w"){ // can move if it can capture a black piece
+					main.variables.canMove.push([x , y]);
+				}
+
+				x = row-1 , y = col-1;
+				if(x >= 0 && y >= 0 && this.getPiece(x , y).charAt(0) == "w"){ // can move if it can capture a black piece
+					main.variables.canMove.push([x, y]);
+				} 
+			}
 		},
 
         cellSelected : function(row , col){
@@ -180,7 +311,10 @@ let main = {
 				let y = main.variables.canMove[i][1];
 				
 				if(x == row && y == col){
+					this.clearCanMove();
 					this.moveSelectedPiece(row , col);
+					this.removePreviousSelectedCell();
+					return;
 				}
 			}
 
@@ -191,19 +325,23 @@ let main = {
 				return;
 			}
 
-         	let chosenCell;
             this.removePreviousSelectedCell(); 
 			
+			let chosenCell;
 			// getting the div of current selected cell and adding the selectedCell class to it
-            chosenCell = document.querySelector(`.row${row}.col${col}`);
-            chosenCell.classList.add('selectedCell');
+			chosenCell = document.querySelector(`.row${row}.col${col}`);
+			if((row+col)%2)
+				chosenCell.classList.add('selectedCellLight');
+			else	
+				chosenCell.classList.add('selectedCellDark');
 			main.variables.selectedCell[0] = row;
 			main.variables.selectedCell[1] = col;
 			main.variables.selectedPiece = this.getPiece(row , col);
 
 			// making the cells visible where the current selected piece can move
 			switch(piece){
-				case ("w_knight" || "b_knight") :{ // if a white or black knoght is seleced
+				case "b_knight" : // fall through (i.e both "b_knight" and "w_knight" will execute same function)
+				case "w_knight" :{ // if a white or black knoght is seleced
 					// remove the previously selected canMove cells
 					this.clearCanMove();
 
@@ -213,7 +351,23 @@ let main = {
 					// Adding canMove cells for currently selected piece
 					this.updateCanMove();
 				}break;
+
+				//-------------------------------------------------------------------------------------------------------------
+
+				case "w_pawn" : // fall through
+				case "b_pawn" :{
+					// remove the previously selected canMove cells
+					this.clearCanMove();
+
+					// getting all the cells where the currently selected knight can move
+					this.canMovePawn(row , col);
+					
+					// Adding canMove cells for currently selected piece
+					this.updateCanMove();
+				}break;
 				
+				//-------------------------------------------------------------------------------------------------------------
+
 				default :{
 					this.clearCanMove();
 				}

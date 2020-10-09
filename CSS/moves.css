@@ -1,8 +1,35 @@
-.selectedCell{
-    background-color: #4cc528;
+.selectedCellDark{
+    background-color: #999966;
     font-size: 70px;
 }
 
-.canMove{
-    background-color: #4cc528;
+.selectedCellLight{
+    background-color: #99b857;
+    font-size: 70px;
+}
+
+.previousMoveDark{
+    background-color: #879d3a;
+}
+
+.previousMoveLight{
+    background-color: #c0db90;
+}
+
+.canMoveDark{
+    background-color:  #999966;
+}
+
+.canMoveLight{
+    background-color: #99b857;
+}
+
+.canMoveDarkCapture{
+    border: 0px solid #999966;
+    border-radius: 20px;
+}
+
+.canMoveLightCapture{
+    border: 0px solid #99b857;
+    border-radius: 20px;
 }

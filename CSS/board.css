@@ -26,11 +26,11 @@
     line-height: 75px;
 }
 
-.black{
+.dark{
     float: left;
     width: 75px;
     height: 75px;
-    background-color: #999;
+    background-color: #a98549;
     font-size: 50px;
     text-align: center;
     display: table-cell;
@@ -38,11 +38,11 @@
     line-height: 75px;
 }
 
-.white{
+.light{
     float: left;
     width: 75px;
     height: 75px;
-    background-color: #fff;
+    background-color: #f0d2b4;
     font-size: 50px;
     text-align: center;
     display: table-cell;
