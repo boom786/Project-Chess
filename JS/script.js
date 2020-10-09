@@ -5,6 +5,7 @@ let main = {
 	  selectedPiece : '', // stores the seleced piece on board
 	  selectedCell : new Array(2), // stores the cell selected
 	  previousMove : new Array(2), // stores the cells used in previous move
+	  previousCheck : new Array(2), // stores the check position
       canMove : [], // stores the cells where a piece can move
       board : new Array(9),	// stores the board data
       pieces : { // different chess pieces assigned to there unicode values
@@ -52,7 +53,9 @@ let main = {
 			}
 		},
 
-        gameSetup : function(){ // initialises the game for the first time
+		gameSetup : function(){ // initialises the game for the first time
+			main.variables.previousCheck[0] = main.variables.previousCheck[1] = -1;
+
 			for(let i = 0 ; i < 9 ; i++){ // created a 2D arry to store the board information
 				main.variables.board[i] = new Array(9);
 				for(let j = 0 ; j < 9 ; j++){
@@ -86,50 +89,6 @@ let main = {
 			
 			this.updateBoard();
 		}, 
-		
-		canMoveKnight : function(row , col){ // adds all the cells where the selected knoght can move
-			let turn = main.variables.turn;
-
-			let x = row + 2, y = col + 1;
-			if(x <= 8 && y <= 8 && this.getPiece(x , y).charAt(0) != turn){
-				main.variables.canMove.push([x , y]);
-			}
-
-			x = row + 2, y = col - 1;
-			if(x <= 8 && y >= 1 && this.getPiece(x , y).charAt(0) != turn){
-				main.variables.canMove.push([x , y]);
-			}
-
-			x = row - 2, y = col + 1;
-			if(x >= 1 && y <= 8 && this.getPiece(x , y).charAt(0) != turn){
-				main.variables.canMove.push([x , y]);
-			}
-
-			x = row - 2, y = col - 1;
-			if(x >= 1 && y >= 1 && this.getPiece(x , y).charAt(0) != turn){
-				main.variables.canMove.push([x , y]);
-			}
-
-			x = row + 1, y = col + 2;
-			if(x <= 8 && y <= 8 && this.getPiece(x , y).charAt(0) != turn){
-				main.variables.canMove.push([x , y]);
-			}
-
-			x = row - 1, y = col + 2;
-			if(x >= 1 && y <= 8 && this.getPiece(x , y).charAt(0) != turn){
-				main.variables.canMove.push([x , y]);
-			}
-
-			x = row + 1, y = col - 2;
-			if(x <= 8 && y >= 1 && this.getPiece(x , y).charAt(0) != turn){
-				main.variables.canMove.push([x , y]);
-			}
-
-			x = row - 1, y = col - 2;
-			if(x >= 1 && y >= 1 && this.getPiece(x , y).charAt(0) != turn){
-				main.variables.canMove.push([x , y]);
-			}
-		},
 
 		clearCanMove : function(){ // removing all the revious cells where a pice could be moved
 			let n = main.variables.canMove.length;
@@ -244,6 +203,50 @@ let main = {
 			}
 
 			main.variables.selectedPiece = '';
+		},
+
+		canMoveKnight : function(row , col){ // adds all the cells where the selected knoght can move
+			let turn = main.variables.turn;
+
+			let x = row + 2, y = col + 1;
+			if(x <= 8 && y <= 8 && this.getPiece(x , y).charAt(0) != turn){
+				main.variables.canMove.push([x , y]);
+			}
+
+			x = row + 2, y = col - 1;
+			if(x <= 8 && y >= 1 && this.getPiece(x , y).charAt(0) != turn){
+				main.variables.canMove.push([x , y]);
+			}
+
+			x = row - 2, y = col + 1;
+			if(x >= 1 && y <= 8 && this.getPiece(x , y).charAt(0) != turn){
+				main.variables.canMove.push([x , y]);
+			}
+
+			x = row - 2, y = col - 1;
+			if(x >= 1 && y >= 1 && this.getPiece(x , y).charAt(0) != turn){
+				main.variables.canMove.push([x , y]);
+			}
+
+			x = row + 1, y = col + 2;
+			if(x <= 8 && y <= 8 && this.getPiece(x , y).charAt(0) != turn){
+				main.variables.canMove.push([x , y]);
+			}
+
+			x = row - 1, y = col + 2;
+			if(x >= 1 && y <= 8 && this.getPiece(x , y).charAt(0) != turn){
+				main.variables.canMove.push([x , y]);
+			}
+
+			x = row + 1, y = col - 2;
+			if(x <= 8 && y >= 1 && this.getPiece(x , y).charAt(0) != turn){
+				main.variables.canMove.push([x , y]);
+			}
+
+			x = row - 1, y = col - 2;
+			if(x >= 1 && y >= 1 && this.getPiece(x , y).charAt(0) != turn){
+				main.variables.canMove.push([x , y]);
+			}
 		},
 
 		canMovePawn : function(row , col){
@@ -455,7 +458,7 @@ let main = {
 			this.canMoveRook(row , col);
 		},
 
-		canMoveKing: function(row , col){
+		canMoveKing : function(row , col){
 			let turn = main.variables.turn;
 			let i , j;
 
@@ -509,6 +512,96 @@ let main = {
 
 		},
 
+		evaluateCheck : function(){
+			let originalCanMove = main.variables.canMove.slice();
+		
+			let turn = main.variables.turn;
+
+			if(turn == 'w'){
+				main.variables.turn = 'b';
+			}
+			else{
+				main.variables.turn = 'w';
+			}
+
+			let inCheck = false;
+
+			for(let row = 1 ; row <= 8 ; row++){
+				for(let col = 1 ; col <= 8 ; col++){
+					let piece = this.getPiece(row, col);
+					if(piece != "*" && piece.charAt(0) != turn){ // found an opponent piece to check the check condition
+						this.clearCanMove();
+
+						switch(piece){
+							case "b_knight" : // fall through (i.e both "b_knight" and "w_knight" will execute same function)
+							case "w_knight" :{ // if a white or black knoght is seleced
+								// getting all the cells where the currently selected knight can move
+								this.canMoveKnight(row , col);
+							}break;
+			
+							//-------------------------------------------------------------------------------------------------------------
+			
+							case "w_pawn" : // fall through
+							case "b_pawn" :{
+								// getting all the cells where the currently selected pawn can move
+								this.canMovePawn(row , col);
+							}break;
+							
+							//-------------------------------------------------------------------------------------------------------------
+			
+							case "w_rook" : // fall through
+							case "b_rook" :{
+								// getting all the cells where the currently selected rook can move
+								this.canMoveRook(row , col);
+							}break;
+			
+							//-------------------------------------------------------------------------------------------------------------
+			
+							case "w_bishop" : // fall through
+							case "b_bishop" :{
+								// getting all the cells where the currently selected bishop can move
+								this.canMoveBishop(row , col);
+							}break;
+			
+							//-------------------------------------------------------------------------------------------------------------
+			
+							case "w_queen" : // fall through
+							case "b_queen" :{
+								// getting all the cells where the currently selected queen can move
+								this.canMoveQueen(row , col);
+							}break;
+			
+							//-------------------------------------------------------------------------------------------------------------
+			
+							default :{
+								this.clearCanMove();
+							}
+						}
+
+						let n = main.variables.canMove.length;
+
+						// removing canMove class to all the cells that are eligibe to move
+						for(let i = 0 ; i < n ; i++){
+							let x = main.variables.canMove[i][0];
+							let y = main.variables.canMove[i][1];
+							piece = this.getPiece(x , y);
+							
+							 // king is in check
+							if(piece.charAt(0) == turn && (piece == 'w_king' || piece == 'b_king')){
+								main.variables.canMove = originalCanMove.slice();
+								main.variables.turn = turn;
+								return [x , y];	// rturns the check position of king
+							}
+						}
+					}
+				}
+			}
+
+			main.variables.canMove = originalCanMove.slice();
+			main.variables.turn = turn;
+			return [-1, -1]; // these values shows that the king is not in check
+		},
+
         cellSelected : function(row , col){
 			// piece type at row and col
 			let piece = this.getPiece(row , col);
@@ -523,6 +616,32 @@ let main = {
 					this.clearCanMove();
 					this.moveSelectedPiece(row , col);
 					this.removePreviousSelectedCell();
+
+					if(main.variables.previousCheck[0] != -1){ // removing the previous check
+						let x = main.variables.previousCheck[0], y = main.variables.previousCheck[1];
+
+						if((x+y)%2){
+							document.querySelector(`.row${x}.col${y}`).classList.remove('checkLight');
+						}
+						else{
+							document.querySelector(`.row${x}.col${y}`).classList.remove('checkDark');
+						}
+					}
+
+					let kingPos = this.evaluateCheck();
+
+					if(kingPos[0] != -1){ // Adding check position
+						if((kingPos[0] + kingPos[1])%2){
+							document.querySelector(`.row${kingPos[0]}.col${kingPos[1]}`).classList.add('checkLight');
+						}
+						else{
+							document.querySelector(`.row${kingPos[0]}.col${kingPos[1]}`).classList.add('checkDark');
+						}
+					}
+
+					main.variables.previousCheck[0] = kingPos[0];
+					main.variables.previousCheck[1] = kingPos[1];
+
 					return;
 				}
 			}

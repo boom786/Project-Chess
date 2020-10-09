@@ -31,3 +31,11 @@
 .canMoveLightCapture{
     border-radius: 20px;
 }
+
+.checkDark{
+    background-color: #ea6e12;
+}
+
+.checkLight{
+    background-color: #fb812d;
+}
