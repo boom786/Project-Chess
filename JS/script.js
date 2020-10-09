@@ -300,6 +300,215 @@ let main = {
 			}
 		},
 
+		canMoveRook : function(row , col){
+			let i;
+			let turn = main.variables.turn;
+
+			// top
+			i = row+1
+			while(i <= 8){
+				let piece = this.getPiece(i , col);
+				if(piece == "*"){
+					main.variables.canMove.push([i , col]);
+				}
+				else if(piece.charAt(0) != turn){
+					main.variables.canMove.push([i , col]);
+					break;			
+				}
+				else{
+					break;
+				}
+				i++;
+			}
+
+			// bottom
+			i = row-1;
+			while(i >= 1){
+				let piece = this.getPiece(i , col);
+				if(piece == "*"){
+					main.variables.canMove.push([i , col]);
+				}
+				else if(piece.charAt(0) != turn){
+					main.variables.canMove.push([i , col]);
+					break;			
+				}
+				else{
+					break;
+				}
+				i--;
+			}
+
+			// right
+			i = col+1;
+			while(i <= 8){
+				let piece = this.getPiece(row , i);
+				if(piece == "*"){
+					main.variables.canMove.push([row , i]);
+				}
+				else if(piece.charAt(0) != turn){
+					main.variables.canMove.push([row , i]);
+					break;			
+				}
+				else{
+					break;
+				}
+				i++;
+			}
+
+			// left
+			i = col-1;
+			while(i >= 1){
+				let piece = this.getPiece(row , i);
+				if(piece == "*"){
+					main.variables.canMove.push([row , i]);
+				}
+				else if(piece.charAt(0) != turn){
+					main.variables.canMove.push([row , i]);
+					break;			
+				}
+				else{
+					break;
+				}
+				i--;
+			}
+		},
+
+		canMoveBishop : function(row , col){
+			let i , j;
+			let turn = main.variables.turn;
+
+			// top right
+			i = row+1 , j = col+1;
+			while(i <= 8 && j <= 8){
+				let piece = this.getPiece(i , j);
+				if(piece == "*"){
+					main.variables.canMove.push([i , j]);
+				}
+				else if(piece.charAt(0) != turn){
+					main.variables.canMove.push([i , j]);
+					break;			
+				}
+				else{
+					break;
+				}
+				i++;
+				j++;
+			}
+
+			// top left
+			i = row+1 , j = col-1;
+			while(i <= 8 && j >= 1){
+				let piece = this.getPiece(i , j);
+				if(piece == "*"){
+					main.variables.canMove.push([i , j]);
+				}
+				else if(piece.charAt(0) != turn){
+					main.variables.canMove.push([i , j]);
+					break;			
+				}
+				else{
+					break;
+				}
+				i++;
+				j--;
+			}
+
+			// bottom right
+			i = row-1 , j = col+1;
+			while(i >= 1 && j <= 8){
+				let piece = this.getPiece(i , j);
+				if(piece == "*"){
+					main.variables.canMove.push([i , j]);
+				}
+				else if(piece.charAt(0) != turn){
+					main.variables.canMove.push([i , j]);
+					break;			
+				}
+				else{
+					break;
+				}
+				i--;
+				j++;
+			}
+
+			// bottom left
+			i = row-1 , j = col-1;
+			while(i >= 1 && j >= 1){
+				let piece = this.getPiece(i , j);
+				if(piece == "*"){
+					main.variables.canMove.push([i , j]);
+				}
+				else if(piece.charAt(0) != turn){
+					main.variables.canMove.push([i , j]);
+					break;			
+				}
+				else{
+					break;
+				}
+				i--;
+				j--;
+			}
+		},
+
+		canMoveQueen : function(row , col){
+			this.canMoveBishop(row , col);
+			this.canMoveRook(row , col);
+		},
+
+		canMoveKing: function(row , col){
+			let turn = main.variables.turn;
+			let i , j;
+
+			// top
+			i = row+1 , j = col;
+			if(i <= 8 && (this.getPiece(i , j) == "*" || this.getPiece(i , j).charAt(0) != turn)){
+				main.variables.canMove.push([i , j]);
+			}
+
+			// top-right
+			i = row+1 , j = col+1;
+			if(i <= 8 && j <= 8 && (this.getPiece(i , j) == "*" || this.getPiece(i , j).charAt(0) != turn)){
+				main.variables.canMove.push([i , j]);
+			}
+
+			// top-left
+			i = row+1 , j = col-1;
+			if(i <= 8 && j >= 1 && (this.getPiece(i , j) == "*" || this.getPiece(i , j).charAt(0) != turn)){
+				main.variables.canMove.push([i , j]);
+			}
+
+			// bottom
+			i = row-1 , j = col;
+			if(i >= 1 && (this.getPiece(i , j) == "*" || this.getPiece(i , j).charAt(0) != turn)){
+				main.variables.canMove.push([i , j]);
+			}
+
+			// bottom-right
+			i = row-1 , j = col+1;
+			if(i >= 1&& j <= 8 && (this.getPiece(i , j) == "*" || this.getPiece(i , j).charAt(0) != turn)){
+				main.variables.canMove.push([i , j]);
+			}
+
+			// bottom-left
+			i = row-1 , j = col-1;
+			if(i >= 1 && j >= 1 && (this.getPiece(i , j) == "*" || this.getPiece(i , j).charAt(0) != turn)){
+				main.variables.canMove.push([i , j]);
+			}
+
+			// left
+			i = row , j = col-1;
+			if(j >= 1 && (this.getPiece(i , j) == "*" || this.getPiece(i , j).charAt(0) != turn)){
+				main.variables.canMove.push([i , j]);
+			}
+
+			// right
+			i = row , j = col+1;
+			if(j <= 8 && (this.getPiece(i , j) == "*" || this.getPiece(i , j).charAt(0) != turn)){
+				main.variables.canMove.push([i , j]);
+			}
+
+		},
+
         cellSelected : function(row , col){
 			// piece type at row and col
 			let piece = this.getPiece(row , col);
@@ -359,13 +568,69 @@ let main = {
 					// remove the previously selected canMove cells
 					this.clearCanMove();
 
-					// getting all the cells where the currently selected knight can move
+					// getting all the cells where the currently selected pawn can move
 					this.canMovePawn(row , col);
 					
 					// Adding canMove cells for currently selected piece
 					this.updateCanMove();
 				}break;
 				
+				//-------------------------------------------------------------------------------------------------------------
+
+				case "w_rook" : // fall through
+				case "b_rook" :{
+					// remove the previously selected canMove cells
+					this.clearCanMove();
+
+					// getting all the cells where the currently selected rook can move
+					this.canMoveRook(row , col);
+					
+					// Adding canMove cells for currently selected piece
+					this.updateCanMove();
+				}break;
+
+				//-------------------------------------------------------------------------------------------------------------
+
+				case "w_bishop" : // fall through
+				case "b_bishop" :{
+					// remove the previously selected canMove cells
+					this.clearCanMove();
+
+					// getting all the cells where the currently selected bishop can move
+					this.canMoveBishop(row , col);
+					
+					// Adding canMove cells for currently selected piece
+					this.updateCanMove();
+				}break;
+
+				//-------------------------------------------------------------------------------------------------------------
+
+				case "w_queen" : // fall through
+				case "b_queen" :{
+					// remove the previously selected canMove cells
+					this.clearCanMove();
+
+					// getting all the cells where the currently selected queen can move
+					this.canMoveQueen(row , col);
+					
+					// Adding canMove cells for currently selected piece
+					this.updateCanMove();
+				}break;
+
+				//-------------------------------------------------------------------------------------------------------------
+
+				case "w_king" : // fall through
+				case "b_king" :{
+					// remove the previously selected canMove cells
+					this.clearCanMove();
+
+					// getting all the cells where the currently selected king can move
+					this.canMoveKing(row , col);
+					
+					// Adding canMove cells for currently selected piece
+					this.updateCanMove();
+				}break;
+
 				//-------------------------------------------------------------------------------------------------------------
 
 				default :{

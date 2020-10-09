@@ -25,11 +25,9 @@
 }
 
 .canMoveDarkCapture{
-    border: 0px solid #999966;
     border-radius: 20px;
 }
 
 .canMoveLightCapture{
-    border: 0px solid #99b857;
     border-radius: 20px;
 }
