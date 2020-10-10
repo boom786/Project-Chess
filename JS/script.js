@@ -1538,7 +1538,73 @@ let main = {
 			return flagForCheckMate;
 		},
 
+		beautifyCanMoveCells : function(){
+			// for can capture cells
+
+			// for dark cells
+			let elements = document.querySelectorAll('.canMoveDarkCapture');
+			elements.forEach(function(singleElement){
+				let piece = singleElement.innerHTML;
+				singleElement.innerHTML = `<div class = 'darkCapture'>${piece}</div>`;
+			});
+			// for light cells
+			elements = document.querySelectorAll('.canMoveLightCapture');
+			elements.forEach(function(singleElement){
+				let piece = singleElement.innerHTML;
+				singleElement.innerHTML = `<div class = 'lightCapture'>${piece}</div>`;
+			});
+
+			//---------------------------------------------------------------------------------
+			// for normal move and not capture cells
+
+			// for dark cells
+			elements = document.querySelectorAll('.canMoveDark');
+			elements.forEach(function(singleElement){
+				let piece = singleElement.innerHTML;
+				singleElement.innerHTML = `<div class = 'darkMove'></div>`;
+			});
+			// for light cells
+			elements = document.querySelectorAll('.canMoveLight');
+			elements.forEach(function(singleElement){
+				let piece = singleElement.innerHTML;
+				singleElement.innerHTML = `<div class = 'lightMove'></div>`;
+			});
+		},
+
+		removeBeautyOfCanMoveCell : function(){ // removes the modifications of can move cell 
+			// for can capture cells
+
+			// for dark cells
+			let elements = document.querySelectorAll('.darkCapture');
+			elements.forEach(function(singleElement){
+				singleElement.remove();
+			});
+			// for light cells
+			elements = document.querySelectorAll('.lightCapture');
+			elements.forEach(function(singleElement){
+				singleElement.remove();
+			});
+
+			//---------------------------------------------------------------------------------
+			// for normal move and not capture cells
+
+			// for dark cells
+			elements = document.querySelectorAll('.darkMove');
+			elements.forEach(function(singleElement){
+				singleElement.remove();
+			});
+			// for light cells
+			elements = document.querySelectorAll('.lightMove');
+			elements.forEach(function(singleElement){
+				singleElement.remove();
+			});
+
+			this.updateBoard();
+		},
+
         cellSelected : function(row , col){
+			this.removeBeautyOfCanMoveCell();
+
 			if(!main.variables.gameStatus){
 				return;
 			}
@@ -1584,6 +1650,12 @@ let main = {
 
 					if(this.evaluateCheckMate()){
 						main.variables.gameStatus = false;
+						let win;
+						if(main.variables.turn == 'b')
+							win = 'white';
+						else
+							win = 'black';
+						alert('Checkmate ' + win + ' Wins');
 					}
 
 					return;
@@ -1701,6 +1773,7 @@ let main = {
 				}
 			}
 
+			this.beautifyCanMoveCells();
         }
     }
 }
@@ -1708,4 +1781,3 @@ let main = {
 //------------------------------------------------------------------------------------------------------------------------------
 
 main.methodes.gameSetup();
-

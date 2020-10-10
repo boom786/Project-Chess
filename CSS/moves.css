@@ -8,6 +8,8 @@
     font-size: 70px;
 }
 
+/* ----------------------------------------------------------------------- */
+
 .previousMoveDark{
     background-color: #879d3a;
 }
@@ -16,21 +18,66 @@
     background-color: #c0db90;
 }
 
+/* ----------------------------------------------------------------------- */
+
 .canMoveDark{
-    background-color:  #999966;
+    position: relative;
+    background-color:  #a98549;
 }
+
+.darkMove{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 30%;
+    height: 30%;
+    border-radius: 100px;
+    background-color: #3c6b09;
+    
+}
+
+/* ----------------------------------------------------------------------- */
 
 .canMoveLight{
-    background-color: #99b857;
+    position: relative;
+    background-color: #f0d2b4;
 }
 
+.lightMove{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 30%;
+    height: 30%;
+    border-radius:100px;
+    background-color: #758c3f;
+}
+
+/* ----------------------------------------------------------------------- */
+
 .canMoveDarkCapture{
-    border-radius: 20px;
+    background-color: #c02f1a;
+}
+
+.darkCapture{
+    border-radius: 30px;
+    background-color: #a98549;
+}
+
+/* ----------------------------------------------------------------------- */
+
+.lightCapture{
+    border-radius: 30px;
+    background-color: #f0d2b4;
 }
 
 .canMoveLightCapture{
-    border-radius: 20px;
+    background-color: #fb812d;
 }
+
+/* ----------------------------------------------------------------------- */
 
 .checkDark{
     background-color: #ea6e12;
