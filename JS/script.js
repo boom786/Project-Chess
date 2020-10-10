@@ -205,7 +205,620 @@ let main = {
 			main.variables.selectedPiece = '';
 		},
 
+		tempMove : function(prevRow , prevCol , nextRow , nextCol){
+			this.setPiece(nextRow , nextCol , this.getPiece(prevRow , prevCol));
+			this.setPiece(prevRow , prevCol , "*");
+		},
+
+		undoTempMove : function(prevRow , prevCol , nextRow , nextCol , piece){
+			this.setPiece(prevRow , prevCol , this.getPiece(nextRow , nextCol));
+			this.setPiece(nextRow , nextCol , piece);
+		},
+
 		canMoveKnight : function(row , col){ // adds all the cells where the selected knoght can move
+			let turn = main.variables.turn;
+			let tempPiece;
+			let arrForCheck;
+
+			let x = row + 2, y = col + 1;
+			if(x <= 8 && y <= 8 && this.getPiece(x , y).charAt(0) != turn){
+				tempPiece = this.getPiece(x , y);
+				this.tempMove(row , col , x , y);
+				arrForCheck = this.evaluateCheck();
+				if(arrForCheck[0] == -1)
+					main.variables.canMove.push([x , y]);
+
+				this.undoTempMove(row , col , x , y , tempPiece);
+			}
+
+			x = row + 2, y = col - 1;
+			if(x <= 8 && y >= 1 && this.getPiece(x , y).charAt(0) != turn){
+				tempPiece = this.getPiece(x , y);
+				this.tempMove(row , col , x , y);
+				arrForCheck = this.evaluateCheck();
+
+				if(arrForCheck[0] == -1)
+					main.variables.canMove.push([x , y]);
+
+				this.undoTempMove(row , col , x , y , tempPiece);
+			}
+
+			x = row - 2, y = col + 1;
+			if(x >= 1 && y <= 8 && this.getPiece(x , y).charAt(0) != turn){
+				tempPiece = this.getPiece(x , y);
+				this.tempMove(row , col , x , y);
+				arrForCheck = this.evaluateCheck();
+
+				if(arrForCheck[0] == -1)
+					main.variables.canMove.push([x , y]);
+
+				this.undoTempMove(row , col , x , y , tempPiece);
+			}
+
+			x = row - 2, y = col - 1;
+			if(x >= 1 && y >= 1 && this.getPiece(x , y).charAt(0) != turn){
+				tempPiece = this.getPiece(x , y);
+				this.tempMove(row , col , x , y);
+				arrForCheck = this.evaluateCheck();
+
+				if(arrForCheck[0] == -1)
+					main.variables.canMove.push([x , y]);
+
+				this.undoTempMove(row , col , x , y , tempPiece);
+			}
+
+			x = row + 1, y = col + 2;
+			if(x <= 8 && y <= 8 && this.getPiece(x , y).charAt(0) != turn){
+				tempPiece = this.getPiece(x , y);
+				this.tempMove(row , col , x , y);
+				arrForCheck = this.evaluateCheck();
+
+				if(arrForCheck[0] == -1)
+					main.variables.canMove.push([x , y]);
+
+				this.undoTempMove(row , col , x , y , tempPiece);
+			}
+
+			x = row - 1, y = col + 2;
+			if(x >= 1 && y <= 8 && this.getPiece(x , y).charAt(0) != turn){
+				tempPiece = this.getPiece(x , y);
+				this.tempMove(row , col , x , y);
+				arrForCheck = this.evaluateCheck();
+
+				if(arrForCheck[0] == -1)
+					main.variables.canMove.push([x , y]);
+
+				this.undoTempMove(row , col , x , y , tempPiece);
+			}
+
+			x = row + 1, y = col - 2;
+			if(x <= 8 && y >= 1 && this.getPiece(x , y).charAt(0) != turn){
+				tempPiece = this.getPiece(x , y);
+				this.tempMove(row , col , x , y);
+				arrForCheck = this.evaluateCheck();
+
+				if(arrForCheck[0] == -1)
+					main.variables.canMove.push([x , y]);
+
+				this.undoTempMove(row , col , x , y , tempPiece);
+			}
+
+			x = row - 1, y = col - 2;
+			if(x >= 1 && y >= 1 && this.getPiece(x , y).charAt(0) != turn){
+				tempPiece = this.getPiece(x , y);
+				this.tempMove(row , col , x , y);
+				arrForCheck = this.evaluateCheck();
+
+				if(arrForCheck[0] == -1)
+					main.variables.canMove.push([x , y]);
+
+				this.undoTempMove(row , col , x , y , tempPiece);
+			}
+		},
+
+		canMovePawn : function(row , col){
+			let turn = main.variables.turn;
+
+			let tempPiece;
+			let arrForCheck;
+
+			if(turn == 'w'){
+				let x , y;
+				if(row == 2){
+					x = row+2 , y = col;
+					if(this.getPiece(x , y) == "*" && this.getPiece(x-1 , y) == "*"){ // can move if it's an empty cell
+						tempPiece = this.getPiece(x , y);
+						this.tempMove(row , col , x , y);
+						arrForCheck = this.evaluateCheck();
+
+						if(arrForCheck[0] == -1)
+							main.variables.canMove.push([x , y]);
+
+						this.undoTempMove(row , col , x , y , tempPiece);
+					}
+				}
+				x = row+1 , y = col;
+				if(x <= 8 && this.getPiece(x , y) == "*"){ // can move if it's an empty cell
+					tempPiece = this.getPiece(x , y);
+					this.tempMove(row , col , x , y);
+					arrForCheck = this.evaluateCheck();
+
+					if(arrForCheck[0] == -1)
+						main.variables.canMove.push([x , y]);
+
+					this.undoTempMove(row , col , x , y , tempPiece);
+				}
+
+				x = row+1 , y = col+1;
+				if(x <= 8 && y <= 8 && this.getPiece(x , y).charAt(0) == "b"){ // can move if it can capture a black piece
+					tempPiece = this.getPiece(x , y);
+					this.tempMove(row , col , x , y);
+					arrForCheck = this.evaluateCheck();
+
+					if(arrForCheck[0] == -1)
+						main.variables.canMove.push([x , y]);
+
+					this.undoTempMove(row , col , x , y , tempPiece);
+				}
+
+				x = row+1 , y = col-1;
+				if(x <= 8 && y >= 0 && this.getPiece(x , y).charAt(0) == "b"){ // can move if it can capture a black piece
+					tempPiece = this.getPiece(x , y);
+					this.tempMove(row , col , x , y);
+					arrForCheck = this.evaluateCheck();
+
+					if(arrForCheck[0] == -1)
+						main.variables.canMove.push([x , y]);
+
+					this.undoTempMove(row , col , x , y , tempPiece);
+				} 
+			}
+
+			//-------------------------------------------------------------------------------------------------------------
+
+			else{
+				let x , y;
+				if(row == 7){
+					x = row-2 , y = col;
+					if(this.getPiece(x , y) == "*" && this.getPiece(x+1 , y) == "*"){ // can move if it's an empty cell
+						tempPiece = this.getPiece(x , y);
+						this.tempMove(row , col , x , y);
+						arrForCheck = this.evaluateCheck();
+		
+						if(arrForCheck[0] == -1)
+							main.variables.canMove.push([x , y]);
+		
+						this.undoTempMove(row , col , x , y , tempPiece);
+					}
+				}
+				x = row-1 , y = col;
+				if(x >= 0 && this.getPiece(x , y) == "*"){ // can move if it's an empty cell
+					tempPiece = this.getPiece(x , y);
+					this.tempMove(row , col , x , y);
+					arrForCheck = this.evaluateCheck();
+
+					if(arrForCheck[0] == -1)
+						main.variables.canMove.push([x , y]);
+
+					this.undoTempMove(row , col , x , y , tempPiece);
+				}
+
+				x = row-1 , y = col+1;
+				if(x >= 0 && y <= 8 && this.getPiece(x , y).charAt(0) == "w"){ // can move if it can capture a black piece
+					tempPiece = this.getPiece(x , y);
+					this.tempMove(row , col , x , y);
+					arrForCheck = this.evaluateCheck();
+
+					if(arrForCheck[0] == -1)
+						main.variables.canMove.push([x , y]);
+
+					this.undoTempMove(row , col , x , y , tempPiece);
+				}
+
+				x = row-1 , y = col-1;
+				if(x >= 0 && y >= 0 && this.getPiece(x , y).charAt(0) == "w"){ // can move if it can capture a black piece
+					tempPiece = this.getPiece(x , y);
+					this.tempMove(row , col , x , y);
+					arrForCheck = this.evaluateCheck();
+
+					if(arrForCheck[0] == -1)
+						main.variables.canMove.push([x , y]);
+
+					this.undoTempMove(row , col , x , y , tempPiece);
+				} 
+			}
+		},
+
+		canMoveRook : function(row , col){
+			let i;
+			let turn = main.variables.turn;
+
+			let tempPiece;
+			let arrForCheck;
+
+			// top
+			i = row+1
+			while(i <= 8){
+				let piece = this.getPiece(i , col);
+				if(piece == "*"){
+					tempPiece = this.getPiece(i , col);
+					this.tempMove(row , col , i , col);
+					arrForCheck = this.evaluateCheck();
+
+					if(arrForCheck[0] == -1)
+						main.variables.canMove.push([i , col]);
+
+					this.undoTempMove(row , col , i , col , tempPiece);
+				}
+				else if(piece.charAt(0) != turn){
+					tempPiece = this.getPiece(i , col);
+					this.tempMove(row , col , i , col);
+					arrForCheck = this.evaluateCheck();
+
+					if(arrForCheck[0] == -1)
+						main.variables.canMove.push([i , col]);
+
+					this.undoTempMove(row , col , i , col , tempPiece);
+					break;			
+				}
+				else{
+					break;
+				}
+				i++;
+			}
+
+			// bottom
+			i = row-1;
+			while(i >= 1){
+				let piece = this.getPiece(i , col);
+				if(piece == "*"){
+					tempPiece = this.getPiece(i , col);
+					this.tempMove(row , col , i , col);
+					arrForCheck = this.evaluateCheck();
+
+					if(arrForCheck[0] == -1)
+						main.variables.canMove.push([i , col]);
+
+					this.undoTempMove(row , col , i , col , tempPiece);
+				}
+				else if(piece.charAt(0) != turn){
+					tempPiece = this.getPiece(i , col);
+					this.tempMove(row , col , i , col);
+					arrForCheck = this.evaluateCheck();
+
+					if(arrForCheck[0] == -1)
+						main.variables.canMove.push([i , col]);
+
+					this.undoTempMove(row , col , i , col , tempPiece);
+					break;			
+				}
+				else{
+					break;
+				}
+				i--;
+			}
+
+			// right
+			i = col+1;
+			while(i <= 8){
+				let piece = this.getPiece(row , i);
+				if(piece == "*"){
+					tempPiece = this.getPiece(row , i);
+					this.tempMove(row , col , row , i);
+					arrForCheck = this.evaluateCheck();
+
+					if(arrForCheck[0] == -1)
+						main.variables.canMove.push([row , i]);
+
+					this.undoTempMove(row , col , row , i , tempPiece);
+				}
+				else if(piece.charAt(0) != turn){
+					tempPiece = this.getPiece(row , i);
+					this.tempMove(row , col , row , i);
+					arrForCheck = this.evaluateCheck();
+
+					if(arrForCheck[0] == -1)
+						main.variables.canMove.push([row , i]);
+
+					this.undoTempMove(row , col , row , i , tempPiece);
+					break;			
+				}
+				else{
+					break;
+				}
+				i++;
+			}
+
+			// left
+			i = col-1;
+			while(i >= 1){
+				let piece = this.getPiece(row , i);
+				if(piece == "*"){
+					tempPiece = this.getPiece(row , i);
+					this.tempMove(row , col , row , i);
+					arrForCheck = this.evaluateCheck();
+
+					if(arrForCheck[0] == -1)
+						main.variables.canMove.push([row , i]);
+
+					this.undoTempMove(row , col , row , i , tempPiece);
+				}
+				else if(piece.charAt(0) != turn){
+					tempPiece = this.getPiece(row , i);
+					this.tempMove(row , col , row , i);
+					arrForCheck = this.evaluateCheck();
+
+					if(arrForCheck[0] == -1)
+						main.variables.canMove.push([row , i]);
+
+					this.undoTempMove(row , col , row , i , tempPiece);
+					break;			
+				}
+				else{
+					break;
+				}
+				i--;
+			}
+		},
+
+		canMoveBishop : function(row , col){
+			let i , j;
+			let turn = main.variables.turn;
+
+			let tempPiece;
+			let arrForCheck;
+
+			// top right
+			i = row+1 , j = col+1;
+			while(i <= 8 && j <= 8){
+				let piece = this.getPiece(i , j);
+				if(piece == "*"){
+					tempPiece = this.getPiece(i , j);
+					this.tempMove(row , col , i , j);
+					arrForCheck = this.evaluateCheck();
+					
+					if(arrForCheck[0] == -1)
+						main.variables.canMove.push([i , j]);
+
+					this.undoTempMove(row , col , i , j , tempPiece);
+				}
+				else if(piece.charAt(0) != turn){
+					tempPiece = this.getPiece(i , j);
+					this.tempMove(row , col , i , j);
+					arrForCheck = this.evaluateCheck();
+					
+					if(arrForCheck[0] == -1)
+						main.variables.canMove.push([i , j]);
+
+					this.undoTempMove(row , col , i , j , tempPiece);
+					break;			
+				}
+				else{
+					break;
+				}
+				i++;
+				j++;
+			}
+
+			// top left
+			i = row+1 , j = col-1;
+			while(i <= 8 && j >= 1){
+				let piece = this.getPiece(i , j);
+				if(piece == "*"){
+					tempPiece = this.getPiece(i , j);
+					this.tempMove(row , col , i , j);
+					arrForCheck = this.evaluateCheck();
+					
+					if(arrForCheck[0] == -1)
+						main.variables.canMove.push([i , j]);
+
+					this.undoTempMove(row , col , i , j , tempPiece);
+				}
+				else if(piece.charAt(0) != turn){
+					tempPiece = this.getPiece(i , j);
+					this.tempMove(row , col , i , j);
+					arrForCheck = this.evaluateCheck();
+					
+					if(arrForCheck[0] == -1)
+						main.variables.canMove.push([i , j]);
+
+					this.undoTempMove(row , col , i , j , tempPiece);
+					break;			
+				}
+				else{
+					break;
+				}
+				i++;
+				j--;
+			}
+
+			// bottom right
+			i = row-1 , j = col+1;
+			while(i >= 1 && j <= 8){
+				let piece = this.getPiece(i , j);
+				if(piece == "*"){
+					tempPiece = this.getPiece(i , j);
+					this.tempMove(row , col , i , j);
+					arrForCheck = this.evaluateCheck();
+					
+					if(arrForCheck[0] == -1)
+						main.variables.canMove.push([i , j]);
+
+					this.undoTempMove(row , col , i , j , tempPiece);
+				}
+				else if(piece.charAt(0) != turn){
+					tempPiece = this.getPiece(i , j);
+					this.tempMove(row , col , i , j);
+					arrForCheck = this.evaluateCheck();
+					
+					if(arrForCheck[0] == -1)
+						main.variables.canMove.push([i , j]);
+
+					this.undoTempMove(row , col , i , j , tempPiece);
+					break;			
+				}
+				else{
+					break;
+				}
+				i--;
+				j++;
+			}
+
+			// bottom left
+			i = row-1 , j = col-1;
+			while(i >= 1 && j >= 1){
+				let piece = this.getPiece(i , j);
+				if(piece == "*"){
+					tempPiece = this.getPiece(i , j);
+					this.tempMove(row , col , i , j);
+					arrForCheck = this.evaluateCheck();
+					
+					if(arrForCheck[0] == -1)
+						main.variables.canMove.push([i , j]);
+
+					this.undoTempMove(row , col , i , j , tempPiece);
+				}
+				else if(piece.charAt(0) != turn){
+					tempPiece = this.getPiece(i , j);
+					this.tempMove(row , col , i , j);
+					arrForCheck = this.evaluateCheck();
+					
+					if(arrForCheck[0] == -1)
+						main.variables.canMove.push([i , j]);
+
+					this.undoTempMove(row , col , i , j , tempPiece);
+					break;			
+				}
+				else{
+					break;
+				}
+				i--;
+				j--;
+			}
+		},
+
+		canMoveQueen : function(row , col){
+			this.canMoveBishop(row , col);
+			this.canMoveRook(row , col);
+		},
+
+		canMoveKing : function(row , col){
+			let turn = main.variables.turn;
+			let i , j;
+
+			let tempPiece;
+			let arrForCheck;
+
+			// top
+			i = row+1 , j = col;
+			if(i <= 8 && (this.getPiece(i , j) == "*" || this.getPiece(i , j).charAt(0) != turn)){
+				tempPiece = this.getPiece(i , j);
+				this.tempMove(row , col , i , j);
+				arrForCheck = this.evaluateCheck();
+				
+				if(arrForCheck[0] == -1)
+					main.variables.canMove.push([i , j]);
+
+				this.undoTempMove(row , col , i , j , tempPiece);
+			}
+
+			// top-right
+			i = row+1 , j = col+1;
+			if(i <= 8 && j <= 8 && (this.getPiece(i , j) == "*" || this.getPiece(i , j).charAt(0) != turn)){
+				tempPiece = this.getPiece(i , j);
+				this.tempMove(row , col , i , j);
+				arrForCheck = this.evaluateCheck();
+				
+				if(arrForCheck[0] == -1)
+					main.variables.canMove.push([i , j]);
+
+				this.undoTempMove(row , col , i , j , tempPiece);
+			}
+
+			// top-left
+			i = row+1 , j = col-1;
+			if(i <= 8 && j >= 1 && (this.getPiece(i , j) == "*" || this.getPiece(i , j).charAt(0) != turn)){
+				tempPiece = this.getPiece(i , j);
+				this.tempMove(row , col , i , j);
+				arrForCheck = this.evaluateCheck();
+				
+				if(arrForCheck[0] == -1)
+					main.variables.canMove.push([i , j]);
+
+				this.undoTempMove(row , col , i , j , tempPiece);
+			}
+
+			// bottom
+			i = row-1 , j = col;
+			if(i >= 1 && (this.getPiece(i , j) == "*" || this.getPiece(i , j).charAt(0) != turn)){
+				tempPiece = this.getPiece(i , j);
+				this.tempMove(row , col , i , j);
+				arrForCheck = this.evaluateCheck();
+				
+				if(arrForCheck[0] == -1)
+					main.variables.canMove.push([i , j]);
+
+				this.undoTempMove(row , col , i , j , tempPiece);
+			}
+
+			// bottom-right
+			i = row-1 , j = col+1;
+			if(i >= 1&& j <= 8 && (this.getPiece(i , j) == "*" || this.getPiece(i , j).charAt(0) != turn)){
+				tempPiece = this.getPiece(i , j);
+				this.tempMove(row , col , i , j);
+				arrForCheck = this.evaluateCheck();
+				
+				if(arrForCheck[0] == -1)
+					main.variables.canMove.push([i , j]);
+
+				this.undoTempMove(row , col , i , j , tempPiece);
+			}
+
+			// bottom-left
+			i = row-1 , j = col-1;
+			if(i >= 1 && j >= 1 && (this.getPiece(i , j) == "*" || this.getPiece(i , j).charAt(0) != turn)){
+				tempPiece = this.getPiece(i , j);
+				this.tempMove(row , col , i , j);
+				arrForCheck = this.evaluateCheck();
+				
+				if(arrForCheck[0] == -1)
+					main.variables.canMove.push([i , j]);
+
+				this.undoTempMove(row , col , i , j , tempPiece);
+			}
+
+			// left
+			i = row , j = col-1;
+			if(j >= 1 && (this.getPiece(i , j) == "*" || this.getPiece(i , j).charAt(0) != turn)){
+				tempPiece = this.getPiece(i , j);
+				this.tempMove(row , col , i , j);
+				arrForCheck = this.evaluateCheck();
+				
+				if(arrForCheck[0] == -1)
+					main.variables.canMove.push([i , j]);
+
+				this.undoTempMove(row , col , i , j , tempPiece);
+			}
+
+			// right
+			i = row , j = col+1;
+			if(j <= 8 && (this.getPiece(i , j) == "*" || this.getPiece(i , j).charAt(0) != turn)){
+				tempPiece = this.getPiece(i , j);
+				this.tempMove(row , col , i , j);
+				arrForCheck = this.evaluateCheck();
+				
+				if(arrForCheck[0] == -1)
+					main.variables.canMove.push([i , j]);
+
+				this.undoTempMove(row , col , i , j , tempPiece);
+			}
+
+		},
+
+		//-----------------------------------------------------------------------------------------------------------
+		// code for special cases, like check, checkMate, castle etc.
+
+		canMoveKnightCheck : function(row , col){ // adds all the cells where the selected knoght can move
 			let turn = main.variables.turn;
 
 			let x = row + 2, y = col + 1;
@@ -249,7 +862,7 @@ let main = {
 			}
 		},
 
-		canMovePawn : function(row , col){
+		canMovePawnCheck : function(row , col){
 			let turn = main.variables.turn;
 
 			if(turn == 'w'){
@@ -303,7 +916,7 @@ let main = {
 			}
 		},
 
-		canMoveRook : function(row , col){
+		canMoveRookCheck : function(row , col){
 			let i;
 			let turn = main.variables.turn;
 
@@ -376,7 +989,7 @@ let main = {
 			}
 		},
 
-		canMoveBishop : function(row , col){
+		canMoveBishopCheck : function(row , col){
 			let i , j;
 			let turn = main.variables.turn;
 
@@ -453,12 +1066,12 @@ let main = {
 			}
 		},
 
-		canMoveQueen : function(row , col){
-			this.canMoveBishop(row , col);
-			this.canMoveRook(row , col);
+		canMoveQueenCheck : function(row , col){
+			this.canMoveBishopCheck(row , col);
+			this.canMoveRookCheck(row , col);
 		},
 
-		canMoveKing : function(row , col){
+		canMoveKingCheck : function(row , col){
 			let turn = main.variables.turn;
 			let i , j;
 
@@ -512,7 +1125,7 @@ let main = {
 
 		},
 
-		evaluateCheck : function(){
+		evaluateCheck : function(){ // evaluates if the current turn player is in check
 			let originalCanMove = main.variables.canMove.slice();
 		
 			let turn = main.variables.turn;
@@ -536,7 +1149,7 @@ let main = {
 							case "b_knight" : // fall through (i.e both "b_knight" and "w_knight" will execute same function)
 							case "w_knight" :{ // if a white or black knoght is seleced
 								// getting all the cells where the currently selected knight can move
-								this.canMoveKnight(row , col);
+								this.canMoveKnightCheck(row , col);
 							}break;
 			
 							//-------------------------------------------------------------------------------------------------------------
@@ -544,7 +1157,7 @@ let main = {
 							case "w_pawn" : // fall through
 							case "b_pawn" :{
 								// getting all the cells where the currently selected pawn can move
-								this.canMovePawn(row , col);
+								this.canMovePawnCheck(row , col);
 							}break;
 							
 							//-------------------------------------------------------------------------------------------------------------
@@ -552,7 +1165,7 @@ let main = {
 							case "w_rook" : // fall through
 							case "b_rook" :{
 								// getting all the cells where the currently selected rook can move
-								this.canMoveRook(row , col);
+								this.canMoveRookCheck(row , col);
 							}break;
 			
 							//-------------------------------------------------------------------------------------------------------------
@@ -560,7 +1173,7 @@ let main = {
 							case "w_bishop" : // fall through
 							case "b_bishop" :{
 								// getting all the cells where the currently selected bishop can move
-								this.canMoveBishop(row , col);
+								this.canMoveBishopCheck(row , col);
 							}break;
 			
 							//-------------------------------------------------------------------------------------------------------------
@@ -568,11 +1181,19 @@ let main = {
 							case "w_queen" : // fall through
 							case "b_queen" :{
 								// getting all the cells where the currently selected queen can move
-								this.canMoveQueen(row , col);
+								this.canMoveQueenCheck(row , col);
 							}break;
 			
 							//-------------------------------------------------------------------------------------------------------------
 			
+							case "w_king" : // fall through
+							case "b_king" :{
+								// getting all the cells where the currently selected king can move
+								this.canMoveKingCheck(row , col);
+							}break;
+
+							//-------------------------------------------------------------------------------------------------------------
+
 							default :{
 								this.clearCanMove();
 							}
