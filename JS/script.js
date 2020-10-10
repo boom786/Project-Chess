@@ -7,6 +7,12 @@ let main = {
 	  selectedCell : new Array(2), // stores the cell selected
 	  previousMove : new Array(2), // stores the cells used in previous move
 	  previousCheck : new Array(2), // stores the check position
+	  rook11 : true, // tells if the piece has moved
+	  rook18 : true, // tells if the piece has moved
+	  king_w : true, // tells if the piece has moved
+	  rook81 : true, // tells if the piece has moved
+	  rook88 : true, // tells if the piece has moved
+	  king_b : true, // tells if the piece has moved
       canMove : [], // stores the cells where a piece can move
       board : new Array(9),	// stores the board data
       pieces : { // different chess pieces assigned to there unicode values
@@ -72,6 +78,12 @@ let main = {
 			}
 
 			main.variables.gameStatus = true;
+			main.variables.rook11 = false;
+			main.variables.rook18 = false;
+			main.variables.king_w = false;
+			main.variables.king_b = false;
+			main.variables.rook81 = false;
+			main.variables.rook88 = false;
 			
 			main.variables.board[1][1] = main.variables.board[1][8] = 'w_rook';
 			main.variables.board[1][2] = main.variables.board[1][7] = 'w_knight';
@@ -169,10 +181,88 @@ let main = {
 		},
 
 		moveSelectedPiece : function(row , col){ // moves the selected piece on board
-			this.setPiece(row , col , main.variables.selectedPiece);
-
 			let prevRow = main.variables.selectedCell[0];
 			let prevCol = main.variables.selectedCell[1];
+
+			// special castling conditions
+				if(this.getPiece(row , col).charAt(0) == main.variables.turn){ 
+					// king has been choosen to move, also the king wants to castle. Because the cell in which the king wants to moves also contains a piece of his type
+					
+					// right-castle
+					if(col == 8){
+						this.setPiece(prevRow , prevCol+1 , this.getPiece(row , col));
+						this.setPiece(prevRow , prevCol+2 , this.getPiece(prevRow , prevCol));
+						this.setPiece(prevRow , prevCol , "*");
+						this.setPiece(row , col , "*");
+
+						if(main.variables.turn == 'w'){
+							main.variables.rook18 = true;
+							main.variables.king_w = true;
+						}
+						else{
+							main.variables.rook88 = true;
+							main.variables.king_b = true;
+						}
+						//---------------------------------------------
+						if(main.variables.previousMove[0][0] != -1){
+							this.removePreviousMove();
+						}
+			
+						main.variables.previousMove[0] = [prevRow , prevCol+1];
+						main.variables.previousMove[1] = [prevRow , prevCol+2];
+			
+						this.addPreviousMove();
+			
+						this.updateBoard();
+
+						if(main.variables.turn == 'w')
+							main.variables.turn = 'b';
+						else
+							main.variables.turn = 'w';
+						//----------------------------------------------
+
+						return;
+					}
+					else if(col == 1){
+						this.setPiece(prevRow , prevCol-1 , this.getPiece(row , col));
+						this.setPiece(prevRow , prevCol-2 , this.getPiece(prevRow , prevCol));
+						this.setPiece(prevRow , prevCol , "*");
+						this.setPiece(row , col , "*");
+
+						if(main.variables.turn == 'w'){
+							main.variables.rook11 = true;
+							main.variables.king_w = true;
+						}
+						else{
+							main.variables.rook81 = true;
+							main.variables.king_b = true;
+						}
+						//----------------------------------------------
+						if(main.variables.previousMove[0][0] != -1){
+							this.removePreviousMove();
+						}
+			
+						main.variables.previousMove[0] = [prevRow , prevCol-1];
+						main.variables.previousMove[1] = [prevRow , prevCol-2];
+			
+						this.addPreviousMove();
+			
+						this.updateBoard();
+
+						if(main.variables.turn == 'w')
+							main.variables.turn = 'b';
+						else
+							main.variables.turn = 'w';
+						//----------------------------------------------
+
+						return;
+					}
+				}
+			//----------------------------------------------------------------------------------------
+
+			// Normal movement
+			this.setPiece(row , col , main.variables.selectedPiece);
+
 			this.setPiece(prevRow, prevCol , "*");
  
 			if(main.variables.previousMove[0][0] != -1){
@@ -190,6 +280,25 @@ let main = {
 				main.variables.turn = 'b';
 			else
 				main.variables.turn = 'w';
+			
+			if(prevRow == 1 && prevCol == 1){
+				main.variables.rook11 = true;
+			}
+			else if(prevRow == 1 && prevCol == 8){
+				main.variables.rook18 = true;
+			}
+			else if(prevRow == 1 && prevCol == 5){
+				main.variables.king_w = true;
+			}
+			else if(prevRow == 8 && prevCol == 1){
+				main.variables.rook81 = true;
+			}
+			else if(prevRow == 8 && prevCol == 8){
+				main.variables.rook88 = true;
+			}
+			else if(prevRow == 8 && prevCol == 5){
+				main.variables.king_b = true;
+			}
 		},
 
 		removePreviousSelectedCell : function(){ // removes the previously selected piece
@@ -816,6 +925,130 @@ let main = {
 				this.undoTempMove(row , col , i , j , tempPiece);
 			}
 
+			// right-castle
+			if(turn == 'w' && this.evaluateCheck()[0] == -1 && main.variables.king_w == false && main.variables.rook18 == false){
+
+				let flagCanCastle = true;
+				if(this.getPiece(1 , 6) != "*" || this.getPiece(1 , 7) != "*"){
+					flagCanCastle = false;
+				}
+				if(flagCanCastle){
+					tempPiece = this.getPiece(1 , 6);
+					this.tempMove(row , col , 1 , 6);
+					arrForCheck = this.evaluateCheck();
+					
+					if(arrForCheck[0] != -1)
+						flagCanCastle = false
+
+					this.undoTempMove(row , col , 1 , 6 , tempPiece);
+				}
+				if(flagCanCastle){
+					tempPiece = this.getPiece(1 , 7);
+					this.tempMove(row , col , 1 , 7);
+					arrForCheck = this.evaluateCheck();
+					
+					if(arrForCheck[0] != -1)
+						flagCanCastle = false
+
+					this.undoTempMove(row , col , 1 , 7 , tempPiece);
+				}
+
+				if(flagCanCastle){
+					main.variables.canMove.push([1 , 8]);
+				}
+			}
+			else if(turn == 'b' && this.evaluateCheck()[0] == -1 && main.variables.king_b == false && main.variables.rook88 == false){
+				let flagCanCastle = true;
+				if(this.getPiece(8 , 6) != "*" || this.getPiece(8 , 7) != "*"){
+					flagCanCastle = false;
+				}
+				if(flagCanCastle){
+					tempPiece = this.getPiece(8 , 6);
+					this.tempMove(row , col , 8 , 6);
+					arrForCheck = this.evaluateCheck();
+					
+					if(arrForCheck[0] != -1)
+						flagCanCastle = false
+
+					this.undoTempMove(row , col , 8 , 6 , tempPiece);
+				}
+				if(flagCanCastle){
+					tempPiece = this.getPiece(8 , 7);
+					this.tempMove(row , col , 8 , 7);
+					arrForCheck = this.evaluateCheck();
+					
+					if(arrForCheck[0] != -1)
+						flagCanCastle = false
+
+					this.undoTempMove(row , col , 8 , 7 , tempPiece);
+				}
+
+				if(flagCanCastle){
+					main.variables.canMove.push([8 , 8]);
+				}
+			}
+
+			// left-castle
+			if(turn == 'w' && this.evaluateCheck()[0] == -1 && main.variables.king_w == false && main.variables.rook11 == false){
+				let flagCanCastle = true;
+				if(this.getPiece(1 , 2) != "*" || this.getPiece(1 , 3) != "*" || this.getPiece(1 , 4) != "*"){
+					flagCanCastle = false;
+				}
+				if(flagCanCastle){
+					tempPiece = this.getPiece(1 , 4);
+					this.tempMove(row , col , 1 , 4);
+					arrForCheck = this.evaluateCheck();
+					
+					if(arrForCheck[0] != -1)
+						flagCanCastle = false
+
+					this.undoTempMove(row , col , 1 , 4 , tempPiece);
+				}
+				if(flagCanCastle){
+					tempPiece = this.getPiece(1 , 3);
+					this.tempMove(row , col , 1 , 3);
+					arrForCheck = this.evaluateCheck();
+					
+					if(arrForCheck[0] != -1)
+						flagCanCastle = false
+
+					this.undoTempMove(row , col , 1 , 3 , tempPiece);
+				}
+
+				if(flagCanCastle){
+					main.variables.canMove.push([1 , 1]);
+				}
+			}
+			else if(turn == 'b' && this.evaluateCheck()[0] == -1 && main.variables.king_b == false && main.variables.rook81 == false){
+				let flagCanCastle = true;
+				if(this.getPiece(8 , 2) != "*" || this.getPiece(8 , 3) != "*" || this.getPiece(8 , 4) != "*"){
+					flagCanCastle = false;
+				}
+				if(flagCanCastle){
+					tempPiece = this.getPiece(8 , 4);
+					this.tempMove(row , col , 8 , 4);
+					arrForCheck = this.evaluateCheck();
+					
+					if(arrForCheck[0] != -1)
+						flagCanCastle = false
+
+					this.undoTempMove(row , col , 8 , 4 , tempPiece);
+				}
+				if(flagCanCastle){
+					tempPiece = this.getPiece(8 , 3);
+					this.tempMove(row , col , 8 , 3);
+					arrForCheck = this.evaluateCheck();
+					
+					if(arrForCheck[0] != -1)
+						flagCanCastle = false
+
+					this.undoTempMove(row , col , 8 , 3 , tempPiece);
+				}
+
+				if(flagCanCastle){
+					main.variables.canMove.push([8 , 1]);
+				}
+			}
 		},
 
 		//-----------------------------------------------------------------------------------------------------------
@@ -1376,7 +1609,7 @@ let main = {
 			main.variables.selectedCell[0] = row;
 			main.variables.selectedCell[1] = col;
 			main.variables.selectedPiece = this.getPiece(row , col);
-
+			
 			// making the cells visible where the current selected piece can move
 			switch(piece){
 				case "b_knight" : // fall through (i.e both "b_knight" and "w_knight" will execute same function)
@@ -1467,6 +1700,7 @@ let main = {
 					this.clearCanMove();
 				}
 			}
+
         }
     }
 }
@@ -1474,3 +1708,4 @@ let main = {
 //------------------------------------------------------------------------------------------------------------------------------
 
 main.methodes.gameSetup();
+
