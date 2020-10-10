@@ -1,6 +1,7 @@
 let main = {
 
     variables: {
+	  gameStatus : false, // shows wether the game is still running or the game is over
       turn : 'w', // shows which player's urn is it
 	  selectedPiece : '', // stores the seleced piece on board
 	  selectedCell : new Array(2), // stores the cell selected
@@ -69,6 +70,8 @@ let main = {
 					main.variables.previousMove[i][j] = -1;
 				}
 			}
+
+			main.variables.gameStatus = true;
 			
 			main.variables.board[1][1] = main.variables.board[1][8] = 'w_rook';
 			main.variables.board[1][2] = main.variables.board[1][7] = 'w_knight';
@@ -1223,7 +1226,90 @@ let main = {
 			return [-1, -1]; // these values shows that the king is not in check
 		},
 
+		evaluateCheckMate : function(){
+			let turn = main.variables.turn;
+			let arrForCheck = this.evaluateCheck();
+			let flagForCheckMate = true;
+			if(arrForCheck[0] != -1){
+				for(let row = 1 ; row <= 8 ; row++){
+					for(let col = 1 ; col <= 8 ; col++){
+						let piece = this.getPiece(row, col);
+						if(piece != "*" && piece.charAt(0) == turn){ // found an opponent piece to check the check condition
+							this.clearCanMove();
+	
+							switch(piece){
+								case "b_knight" : // fall through (i.e both "b_knight" and "w_knight" will execute same function)
+								case "w_knight" :{ // if a white or black knoght is seleced
+									// getting all the cells where the currently selected knight can move
+									this.canMoveKnight(row , col);
+								}break;
+				
+								//-------------------------------------------------------------------------------------------------------------
+				
+								case "w_pawn" : // fall through
+								case "b_pawn" :{
+									// getting all the cells where the currently selected pawn can move
+									this.canMovePawn(row , col);
+								}break;
+								
+								//-------------------------------------------------------------------------------------------------------------
+				
+								case "w_rook" : // fall through
+								case "b_rook" :{
+									// getting all the cells where the currently selected rook can move
+									this.canMoveRook(row , col);
+								}break;
+				
+								//-------------------------------------------------------------------------------------------------------------
+				
+								case "w_bishop" : // fall through
+								case "b_bishop" :{
+									// getting all the cells where the currently selected bishop can move
+									this.canMoveBishop(row , col);
+								}break;
+				
+								//-------------------------------------------------------------------------------------------------------------
+				
+								case "w_queen" : // fall through
+								case "b_queen" :{
+									// getting all the cells where the currently selected queen can move
+									this.canMoveQueen(row , col);
+								}break;
+				
+								//-------------------------------------------------------------------------------------------------------------
+				
+								case "w_king" : // fall through
+								case "b_king" :{
+									// getting all the cells where the currently selected king can move
+									this.canMoveKing(row , col);
+								}break;
+	
+								//-------------------------------------------------------------------------------------------------------------
+	
+								default :{
+									this.clearCanMove();
+								}
+							}
+
+							if(main.variables.canMove.length != 0){
+								flagForCheckMate = false;
+							}
+						}
+					}
+				}
+			}
+			else{
+				flagForCheckMate = false;
+			}
+
+			return flagForCheckMate;
+		},
+
         cellSelected : function(row , col){
+			if(!main.variables.gameStatus){
+				return;
+			}
+
 			// piece type at row and col
 			let piece = this.getPiece(row , col);
 
@@ -1262,6 +1348,10 @@ let main = {
 
 					main.variables.previousCheck[0] = kingPos[0];
 					main.variables.previousCheck[1] = kingPos[1];
+
+					if(this.evaluateCheckMate()){
+						main.variables.gameStatus = false;
+					}
 
 					return;
 				}
