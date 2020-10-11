@@ -1602,6 +1602,97 @@ let main = {
 			this.updateBoard();
 		},
 
+		evaluateStaleMate : function(){
+			let turn = main.variables.turn;
+			let arrForCheck = this.evaluateCheck();
+			let flagForStaleMate = true;
+			if(arrForCheck[0] == -1){
+				for(let row = 1 ; row <= 8 ; row++){
+					for(let col = 1 ; col <= 8 ; col++){
+						let piece = this.getPiece(row, col);
+						if(piece != "*" && piece.charAt(0) == turn){ // found an opponent piece to check the check condition
+							this.clearCanMove();
+	
+							switch(piece){
+								case "b_knight" : // fall through (i.e both "b_knight" and "w_knight" will execute same function)
+								case "w_knight" :{ // if a white or black knoght is seleced
+									// getting all the cells where the currently selected knight can move
+									this.canMoveKnight(row , col);
+								}break;
+				
+								//-------------------------------------------------------------------------------------------------------------
+				
+								case "w_pawn" : // fall through
+								case "b_pawn" :{
+									// getting all the cells where the currently selected pawn can move
+									this.canMovePawn(row , col);
+								}break;
+								
+								//-------------------------------------------------------------------------------------------------------------
+				
+								case "w_rook" : // fall through
+								case "b_rook" :{
+									// getting all the cells where the currently selected rook can move
+									this.canMoveRook(row , col);
+								}break;
+				
+								//-------------------------------------------------------------------------------------------------------------
+				
+								case "w_bishop" : // fall through
+								case "b_bishop" :{
+									// getting all the cells where the currently selected bishop can move
+									this.canMoveBishop(row , col);
+								}break;
+				
+								//-------------------------------------------------------------------------------------------------------------
+				
+								case "w_queen" : // fall through
+								case "b_queen" :{
+									// getting all the cells where the currently selected queen can move
+									this.canMoveQueen(row , col);
+								}break;
+				
+								//-------------------------------------------------------------------------------------------------------------
+				
+								case "w_king" : // fall through
+								case "b_king" :{
+									// getting all the cells where the currently selected king can move
+									this.canMoveKing(row , col);
+								}break;
+	
+								//-------------------------------------------------------------------------------------------------------------
+	
+								default :{
+									this.clearCanMove();
+								}
+							}
+
+							if(main.variables.canMove.length != 0){
+								flagForStaleMate = false;
+							}
+						}
+					}
+				}
+			}
+			else{
+				flagForStaleMate = false;
+			}
+
+			return flagForStaleMate;
+		},
+
+		evaluateDraw : function(){ // checks if the game has reached a draw 
+			let flagDraw = true;
+			for(let i = 1 ; i <= 8 ; i++){
+				for(let j = 1 ; j <= 8 ; j++){
+					let piece = this.getPiece(i , j);
+					if(piece != "*" && piece != "b_king" && piece != "w_king")
+						flagDraw = false;
+				}
+			}
+			return flagDraw;
+		},
+
         cellSelected : function(row , col){
 			this.removeBeautyOfCanMoveCell();
 
@@ -1655,7 +1746,15 @@ let main = {
 							win = 'white';
 						else
 							win = 'black';
-						alert('Checkmate ' + win + ' Wins');
+						alert('Checkmate ' + win + ' Wins.!');
+					}
+					else if(this.evaluateDraw()){
+						main.variables.gameStatus = false;
+						alert(`it's a draw..!`);
+					}
+					else if(this.evaluateStaleMate()){
+						main.variables.gameStatus = false;
+						alert('Stale Mate !');
 					}
 
 					return;
