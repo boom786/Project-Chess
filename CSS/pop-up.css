@@ -1,0 +1,105 @@
+
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.container{
+    position: relative;
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: 0.5s;
+    padding: 20px;
+}
+.container#blur.active{
+    filter: blur(20px);
+    pointer-events: none;
+    user-select: none;
+}
+
+#popup{
+    position: fixed;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50% , -50%);
+    width: 600px;
+    padding: 50px;
+    box-shadow: 0 5px 30px rgba(0 , 0 , 0 , .30);
+    background: #fff;
+    visibility: hidden;
+    opacity: 0;
+    transition: 0.2s;
+}
+
+#popup.active{
+    top: 50%;
+    visibility: visible;
+    opacity: 1;
+    transition: 0.5s;
+}
+
+/* PIECES */
+.promotion{
+    float: left;
+    width: 75px;
+    height: 75px;
+    font-size: 50px;
+    text-align: center;
+    display: table-cell;
+    vertical-align: middle;
+    line-height: 75px;
+}
+
+/* POp-UP */
+
+/* black */
+#b_promotion{
+    position: fixed;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50% , -50%);
+    width: 600px;
+    padding: 50px;
+    box-shadow: 0 5px 30px rgba(0 , 0 , 0 , .30);
+    background: #fff;
+    visibility: hidden;
+    opacity: 0;
+    transition: 0.2s;
+}
+
+#b_promotion.active{
+    top: 50%;
+    visibility: visible;
+    opacity: 1;
+    transition: 0.5s;
+}
+
+/* white */
+#w_promotion{
+    position: fixed;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50% , -50%);
+    width: 600px;
+    padding: 50px;
+    box-shadow: 0 5px 30px rgba(0 , 0 , 0 , .30);
+    background: #fff;
+    visibility: hidden;
+    opacity: 0;
+    transition: 0.2s;
+}
+
+#w_promotion.active{
+    top: 50%;
+    visibility: visible;
+    opacity: 1;
+    transition: 0.5s;
+}
+
+.chooseFrom{
+    margin: 0 auto;
+}

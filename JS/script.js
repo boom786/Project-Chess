@@ -9,6 +9,7 @@ let main = {
 	  previousCheck : new Array(2), // stores the check position
 	  w_EnPassent : new Array(9), // stores if the white pawn can be captured using EnPassent
 	  b_EnPassent : new Array(9), // stores if the black pawn can be captured using EnPassent
+	  promotionPlace : new Array(2), // stores the type of promotion to be made
 	  rook11 : true, // tells if the piece has moved
 	  rook18 : true, // tells if the piece has moved
 	  king_w : true, // tells if the piece has moved
@@ -192,6 +193,19 @@ let main = {
 			let prevCol = main.variables.selectedCell[1];
 			let piece = main.variables.selectedPiece;
 
+			// adding promotion condition
+			if(piece == 'b_pawn' || piece == 'w_pawn'){
+				if(piece.charAt(0) == 'b' && row == 1){
+					main.variables.promotionPlace[0] = row;
+					main.variables.promotionPlace[1] = col;
+					this.promoteBlack();
+				}
+				else if(piece.charAt(0) == 'w' && row == 8){
+					main.variables.promotionPlace[0] = row;
+					main.variables.promotionPlace[1] = col;
+					this.promoteWhite();
+				}
+			}
 			// doing an EnPassent Move
 			if(piece == 'w_pawn' || piece == 'b_pawn'){
 				if(col != prevCol && this.getPiece(row , col) == "*"){ // this is a condition for EnPassent
@@ -1223,7 +1237,7 @@ let main = {
 				}
 
 				x = row+1 , y = col-1;
-				if(x <= 8 && y >= 0 && this.getPiece(x , y).charAt(0) == "b"){ // can move if it can capture a black piece
+				if(x <= 8 && y >= 1 && this.getPiece(x , y).charAt(0) == "b"){ // can move if it can capture a black piece
 					main.variables.canMove.push([x, y]);
 				} 
 			}
@@ -1239,17 +1253,17 @@ let main = {
 					}
 				}
 				x = row-1 , y = col;
-				if(x >= 0 && this.getPiece(x , y) == "*"){ // can move if it's an empty cell
+				if(x >= 1 && this.getPiece(x , y) == "*"){ // can move if it's an empty cell
 					main.variables.canMove.push([x , y]);
 				}
 
 				x = row-1 , y = col+1;
-				if(x >= 0 && y <= 8 && this.getPiece(x , y).charAt(0) == "w"){ // can move if it can capture a black piece
+				if(x >= 1 && y <= 8 && this.getPiece(x , y).charAt(0) == "w"){ // can move if it can capture a black piece
 					main.variables.canMove.push([x , y]);
 				}
 
 				x = row-1 , y = col-1;
-				if(x >= 0 && y >= 0 && this.getPiece(x , y).charAt(0) == "w"){ // can move if it can capture a black piece
+				if(x >= 1 && y >= 1 && this.getPiece(x , y).charAt(0) == "w"){ // can move if it can capture a black piece
 					main.variables.canMove.push([x, y]);
 				} 
 			}
@@ -1546,7 +1560,7 @@ let main = {
 							let y = main.variables.canMove[i][1];
 							piece = this.getPiece(x , y);
 							
-							 // king is in check
+							 // king is in checkconsole.log(main.variables.canMove);
 							if(piece.charAt(0) == turn && (piece == 'w_king' || piece == 'b_king')){
 								main.variables.canMove = originalCanMove.slice();
 								main.variables.turn = turn;
@@ -1638,6 +1652,7 @@ let main = {
 				flagForCheckMate = false;
 			}
 
+			this.clearCanMove();
 			return flagForCheckMate;
 		},
 
@@ -1781,6 +1796,7 @@ let main = {
 				flagForStaleMate = false;
 			}
 
+			this.clearCanMove();
 			return flagForStaleMate;
 		},
 
@@ -1794,6 +1810,74 @@ let main = {
 				}
 			}
 			return flagDraw;
+		},
+
+		promoteBlack : function(){
+			var blur = document.getElementById('blur');
+			blur.classList.toggle('active');
+			var popup = document.getElementById('b_promotion');
+			popup.classList.toggle('active');
+		},
+
+		closePromoteBlack : function(type){
+			this.setPiece(main.variables.promotionPlace[0] , main.variables.promotionPlace[1] , type);
+			this.updateBoard();
+			this.specialCheckAndDraw();
+			var blur = document.getElementById('blur');
+			blur.classList.toggle('active');
+			var popup = document.getElementById('b_promotion');
+			popup.classList.toggle('active');
+		},
+
+		promoteWhite : function(){
+			var blur = document.getElementById('blur');
+			blur.classList.toggle('active');
+			var popup = document.getElementById('w_promotion');
+			popup.classList.toggle('active');
+		},
+
+		closePromoteWhite : function(type){
+			this.setPiece(main.variables.promotionPlace[0] , main.variables.promotionPlace[1] , type);
+			this.updateBoard();
+			this.specialCheckAndDraw();
+			var blur = document.getElementById('blur');
+			blur.classList.toggle('active');
+			var popup = document.getElementById('w_promotion');
+			popup.classList.toggle('active');
+		},
+
+		specialCheckAndDraw : function(){
+			let kingPos = this.evaluateCheck();
+
+			if(kingPos[0] != -1){ // Adding check position
+				if((kingPos[0] + kingPos[1])%2){
+					document.querySelector(`.row${kingPos[0]}.col${kingPos[1]}`).classList.add('checkLight');
+				}
+				else{
+					document.querySelector(`.row${kingPos[0]}.col${kingPos[1]}`).classList.add('checkDark');
+				}
+			}
+
+			main.variables.previousCheck[0] = kingPos[0];
+			main.variables.previousCheck[1] = kingPos[1];
+
+			if(this.evaluateCheckMate()){
+				main.variables.gameStatus = false;
+				let win;
+				if(main.variables.turn == 'b')
+					win = 'white';
+				else
+					win = 'black';
+				alert('Checkmate ' + win + ' Wins.!');
+			}
+			else if(this.evaluateDraw()){
+				main.variables.gameStatus = false;
+				alert(`it's a draw..!`);
+			}
+			else if(this.evaluateStaleMate()){
+				main.variables.gameStatus = false;
+				alert('Stale Mate !');
+			}
 		},
 
         cellSelected : function(row , col){
@@ -1827,38 +1911,8 @@ let main = {
 							document.querySelector(`.row${x}.col${y}`).classList.remove('checkDark');
 						}
 					}
-
-					let kingPos = this.evaluateCheck();
-
-					if(kingPos[0] != -1){ // Adding check position
-						if((kingPos[0] + kingPos[1])%2){
-							document.querySelector(`.row${kingPos[0]}.col${kingPos[1]}`).classList.add('checkLight');
-						}
-						else{
-							document.querySelector(`.row${kingPos[0]}.col${kingPos[1]}`).classList.add('checkDark');
-						}
-					}
-
-					main.variables.previousCheck[0] = kingPos[0];
-					main.variables.previousCheck[1] = kingPos[1];
-
-					if(this.evaluateCheckMate()){
-						main.variables.gameStatus = false;
-						let win;
-						if(main.variables.turn == 'b')
-							win = 'white';
-						else
-							win = 'black';
-						alert('Checkmate ' + win + ' Wins.!');
-					}
-					else if(this.evaluateDraw()){
-						main.variables.gameStatus = false;
-						alert(`it's a draw..!`);
-					}
-					else if(this.evaluateStaleMate()){
-						main.variables.gameStatus = false;
-						alert('Stale Mate !');
-					}
+					
+					this.specialCheckAndDraw();
 					
 					return;
 				}
@@ -1974,7 +2028,6 @@ let main = {
 					this.clearCanMove();
 				}
 			}
-
 			this.beautifyCanMoveCells();
         }
     }
