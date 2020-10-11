@@ -7,6 +7,8 @@ let main = {
 	  selectedCell : new Array(2), // stores the cell selected
 	  previousMove : new Array(2), // stores the cells used in previous move
 	  previousCheck : new Array(2), // stores the check position
+	  w_EnPassent : new Array(9), // stores if the white pawn can be captured using EnPassent
+	  b_EnPassent : new Array(9), // stores if the black pawn can be captured using EnPassent
 	  rook11 : true, // tells if the piece has moved
 	  rook18 : true, // tells if the piece has moved
 	  king_w : true, // tells if the piece has moved
@@ -75,6 +77,11 @@ let main = {
 				for(let j = 0 ; j < 2 ; j++){
 					main.variables.previousMove[i][j] = -1;
 				}
+			}
+
+			for(let i = 1 ; i <= 8 ; i++){
+				main.variables.w_EnPassent[i] = false;
+				main.variables.b_EnPassent[i] = false;
 			}
 
 			main.variables.gameStatus = true;
@@ -183,6 +190,50 @@ let main = {
 		moveSelectedPiece : function(row , col){ // moves the selected piece on board
 			let prevRow = main.variables.selectedCell[0];
 			let prevCol = main.variables.selectedCell[1];
+			let piece = main.variables.selectedPiece;
+
+			// doing an EnPassent Move
+			if(piece == 'w_pawn' || piece == 'b_pawn'){
+				if(col != prevCol && this.getPiece(row , col) == "*"){ // this is a condition for EnPassent
+					// Removing the piece on which Enpassent is performed
+					this.setPiece(prevRow , col , "*");
+				}
+			}
+
+			// updating EnPassent array
+			
+			if(piece == 'w_pawn' || piece == 'b_pawn'){
+				if(piece.charAt(0) == 'w'){
+					if(row - prevRow == 2){
+						main.variables.w_EnPassent[col] = true;
+					}
+					else{
+						for(let i = 1 ; i <= 8 ; i++){
+							main.variables.b_EnPassent[i] = false;
+						}
+					}
+				}
+				else{
+					if(prevRow - row == 2){
+						main.variables.b_EnPassent[col] = true;
+					}
+					else{
+						for(let i = 1 ; i <= 8 ; i++){
+							main.variables.w_EnPassent[i] = false;
+						}
+					}
+				}
+			}
+			else if(piece.charAt(0) == 'w'){
+				for(let i = 1 ; i <= 8 ; i++){
+					main.variables.b_EnPassent[i] = false;
+				}
+			}
+			else{
+				for(let i = 1 ; i <= 8 ; i++){
+					main.variables.w_EnPassent[i] = false;
+				}
+			}
 
 			// special castling conditions
 				if(this.getPiece(row , col).charAt(0) == main.variables.turn){ 
@@ -483,7 +534,33 @@ let main = {
 						main.variables.canMove.push([x , y]);
 
 					this.undoTempMove(row , col , x , y , tempPiece);
-				} 
+				}
+				
+				// checking for EnPssent to the right
+				x = row+1 , y = col+1;
+				if(x == 6 && y <= 8 && main.variables.b_EnPassent[y]){
+					tempPiece = this.getPiece(x , y);
+					this.tempMove(row , col , x , y);
+					arrForCheck = this.evaluateCheck();
+
+					if(arrForCheck[0] == -1)
+						main.variables.canMove.push([x , y]);
+
+					this.undoTempMove(row , col , x , y , tempPiece);
+				}
+
+				// checking for EnPassent to the left
+				x = row+1 , y = col-1;
+				if(x == 6 && y >= 1 && main.variables.b_EnPassent[y]){
+					tempPiece = this.getPiece(x , y);
+					this.tempMove(row , col , x , y);
+					arrForCheck = this.evaluateCheck();
+
+					if(arrForCheck[0] == -1)
+						main.variables.canMove.push([x , y]);
+
+					this.undoTempMove(row , col , x , y , tempPiece);
+				}
 			}
 
 			//-------------------------------------------------------------------------------------------------------------
@@ -538,6 +615,32 @@ let main = {
 
 					this.undoTempMove(row , col , x , y , tempPiece);
 				} 
+
+				// checking for EnPssent to the right
+				x = row-1 , y = col+1;
+				if(x == 3 && y <= 8 && main.variables.w_EnPassent[y]){
+					tempPiece = this.getPiece(x , y);
+					this.tempMove(row , col , x , y);
+					arrForCheck = this.evaluateCheck();
+
+					if(arrForCheck[0] == -1)
+						main.variables.canMove.push([x , y]);
+
+					this.undoTempMove(row , col , x , y , tempPiece);
+				}
+
+				// checking for EnPassent to the left
+				x = row-1 , y = col-1;
+				if(x == 3 && y >= 1 && main.variables.w_EnPassent[y]){
+					tempPiece = this.getPiece(x , y);
+					this.tempMove(row , col , x , y);
+					arrForCheck = this.evaluateCheck();
+
+					if(arrForCheck[0] == -1)
+						main.variables.canMove.push([x , y]);
+
+					this.undoTempMove(row , col , x , y , tempPiece);
+				}
 			}
 		},
 
@@ -1756,7 +1859,7 @@ let main = {
 						main.variables.gameStatus = false;
 						alert('Stale Mate !');
 					}
-
+					
 					return;
 				}
 			}
