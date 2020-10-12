@@ -38,6 +38,22 @@ let main = {
     },
 
     methodes : {
+		startGame : function(){ // it starts the game and also stopes the game 
+			main.variables.gameStatus = !main.variables.gameStatus;
+
+			let value = 'STOP GAME';
+			if(main.variables.gameStatus == false){
+				value = 'START GAME';
+			}
+			
+			if(value == 'STOP GAME')
+				document.querySelector('.startButton').classList.add('stop');
+			else	
+				document.querySelector('.startButton').classList.remove('stop');
+			document.querySelector('.startButton').innerHTML = value;
+			
+		},
+
 		getPiece : function(row , col){ // return the type of piece that's selected
 			return main.variables.board[row][col]; 
 		},
@@ -64,29 +80,40 @@ let main = {
 			}
 		},
 
-		gameSetup : function(){ // initialises the game for the first time
-			main.variables.previousCheck[0] = main.variables.previousCheck[1] = -1;
+		resetBoard : function(){
+			// resetting the start button
+			if(main.variables.gameStatus == true){
+				document.querySelector('.startButton').innerHTML = 'START GAME';
+				document.querySelector('.startButton').classList.remove('stop');
+			}
 
-			for(let i = 0 ; i < 9 ; i++){ // created a 2D arry to store the board information
-				main.variables.board[i] = new Array(9);
+			main.variables.turn = 'w';
+			this.removePreviousMove();
+			this.clearCanMove();
+			this.removePreviousSelectedCell();
+			main.variables.selectedPiece = '';
+			//--------------------------------------------------------------------------------------------
+
+			for(let i = 0 ; i < 9 ; i++){
 				for(let j = 0 ; j < 9 ; j++){
 					this.setPiece(i , j , "*");
 				}
-			} 
-			
+			}
+
 			for(let i = 0 ; i < 2 ; i++){
-				main.variables.previousMove[i] = new Array(2);
 				for(let j = 0 ; j < 2 ; j++){
 					main.variables.previousMove[i][j] = -1;
 				}
 			}
+
+			main.variables.previousCheck[0] = main.variables.previousCheck[1] = -1;
 
 			for(let i = 1 ; i <= 8 ; i++){
 				main.variables.w_EnPassent[i] = false;
 				main.variables.b_EnPassent[i] = false;
 			}
 
-			main.variables.gameStatus = true;
+			main.variables.gameStatus = false;
 			main.variables.rook11 = false;
 			main.variables.rook18 = false;
 			main.variables.king_w = false;
@@ -112,6 +139,25 @@ let main = {
 			}
 			
 			this.updateBoard();
+		},
+
+		gameSetup : function(){ // initialises the game for the first time
+		
+			for(let i = 0 ; i < 9 ; i++){ // created a 2D arry to store the board information
+				main.variables.board[i] = new Array(9);
+				for(let j = 0 ; j < 9 ; j++){
+					this.setPiece(i , j , "*");
+				}
+			} 
+			
+			for(let i = 0 ; i < 2 ; i++){
+				main.variables.previousMove[i] = new Array(2);
+				for(let j = 0 ; j < 2 ; j++){
+					main.variables.previousMove[i][j] = -1;
+				}
+			}
+
+			this.resetBoard();
 		}, 
 
 		clearCanMove : function(){ // removing all the revious cells where a pice could be moved
@@ -165,6 +211,8 @@ let main = {
 
 		removePreviousMove : function(){ // removes the previous move from the board
 			let prev = main.variables.previousMove;
+			if(prev[0][0] == -1)
+				return;
 			if((prev[0][0]+prev[0][1])%2)
 				document.querySelector(`.row${prev[0][0]}.col${prev[0][1]}`).classList.remove('previousMoveLight');
 			else	
