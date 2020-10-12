@@ -1,6 +1,14 @@
 let main = {
 
     variables: {
+	  cnt : 1 , // tells the number of moves till now
+	  specialCheckConditions : false , // extra parameter to check wether the game ended by checkmate, draw or something else.
+	  firstTimeGameStarted : false, // tells wether we have just clicked the start button or not
+	  addCustomPiece : false, // tells wether the current state is to add piece for custom board or not
+	  removeCustomPiece : false, // tells wether the current state is to remove piece for custom board or not
+	  customCell : new Array(2), // tell the position of custom modified cell
+	  w_kingRemoved : false, // tells wether the white king is removed in custom board or not
+	  b_kingRemoved : false, // tells wether the black king is removed in custom board or not
 	  gameStatus : false, // shows wether the game is still running or the game is over
 	  turn : 'w', // shows which player's urn is it
 	  AIplays : true, // tells wether the computer is playing or not
@@ -33,22 +41,78 @@ let main = {
         b_rook: '&#9820;',
 		b_pawn: '&#9823;',
 		_ : '', // represents an empty cell
-      }
+	  },
+	  colEquivFile : { // maps the col to the equivlent file
+		1 : 'a',
+		2 : 'b',
+		3 : 'c',
+		4 : 'd',
+		5 : 'e',
+		6 : 'f',
+		7 : 'g',
+		8 : 'h',
+	  }
 
     },
 
     methodes : {
-		startGame : function(){ // it starts the game and also stopes the game 
+		addPieceToBoard : function(){
+			main.variables.addCustomPiece = true;
+			main.variables.removeCustomPiece = false;
+			let elementAdd = document.querySelector('.addCustomButton');
+			elementAdd.classList.add('customButtonActive');
+
+			let elementRemove = document.querySelector('.removeCustomButton');
+			elementRemove.classList.remove('customButtonActive');
+
+			document.querySelector('.customInfo').innerHTML = 'Select the cell, and choose the Piece you want to add.';
+
+			// removing the castling for custom board
+			main.variables.rook11 = true;
+			main.variables.rook18 = true;
+			main.variables.king_w = true;
+			main.variables.king_b = true;
+			main.variables.rook81 = true;
+			main.variables.rook88 = true;
+
+			// telling the user wether castling is allowed or not over the menue
+			document.querySelector('.boardType').innerHTML = 'Custom Board - Castling Not Allowed';
+		},
+
+		removePieceFromBoard : function(){
+			main.variables.addCustomPiece = false;
+			main.variables.removeCustomPiece = true;
+			let elementRemove = document.querySelector('.removeCustomButton');
+			elementRemove.classList.add('customButtonActive');
+
+			let elementAdd = document.querySelector('.addCustomButton');
+			elementAdd.classList.remove('customButtonActive');
+
+			document.querySelector('.customInfo').innerHTML = 'Select the cell to remove the Piece.';
+
+			// removing the castling for custom board
+			main.variables.rook11 = true;
+			main.variables.rook18 = true;
+			main.variables.king_w = true;
+			main.variables.king_b = true;
+			main.variables.rook81 = true;
+			main.variables.rook88 = true;
+
+			// telling the user wether castling is allowed or not over the menue
+			document.querySelector('.boardType').innerHTML = 'Custom Board - Castling Not Allowed';
+		},
+
+		startGame : function(){ // it starts the game and also stops the game 
 			main.variables.gameStatus = !main.variables.gameStatus;
 
 			let choice = document.querySelector('.choice');
 
 			let value = 'ABORT GAME';
-			if(main.variables.gameStatus == false){
+			if(main.variables.gameStatus == false || main.variables.specialCheckConditions == true){
 				value = 'START GAME';
 			}
-			
-			if(value == 'ABORT GAME'){
+			if(value == 'ABORT GAME'){ // starting the game
+
 				document.querySelector('.startButton').classList.add('stop');
 				// Setting the opponent as a player or a computer
 				let index = choice.selectedIndex;
@@ -60,13 +124,53 @@ let main = {
 				}
 
 				choice.disabled = true;
+
+				// disabling the custom board buttons
+				let customButton = document.querySelectorAll('.customButton');
+				customButton.forEach(function(element){
+					element.disabled = true;
+				});
+
+				// setting the Custom Board Portion to default
+				main.variables.addCustomPiece = false;
+				main.variables.removeCustomPiece = false;
+				main.variables.w_kingRemoved = false;
+				main.variables.b_kingRemoved = false;
+				let ele = document.querySelector('.w_kingCustom');
+				if(ele != null){
+					ele.remove();
+				}
+				ele = document.querySelector('.b_kingCustom');
+				if(ele != null){
+					ele.remove();
+				}
+				let elementAdd = document.querySelector('.addCustomButton');
+				elementAdd.classList.remove('customButtonActive');
+
+				let elementRemove = document.querySelector('.removeCustomButton');
+				elementRemove.classList.remove('customButtonActive');
+
+				document.querySelector('.customInfo').innerHTML = '';
+
+				document.querySelector('.startButton').innerHTML = value;
+				
+				this.specialCheckAndDraw();
 			}
-			else{	
+			else{	// Aborting the game
+
 				document.querySelector('.startButton').classList.remove('stop');
 				this.resetBoard();
 				choice.disabled = false;
+
+				// enabling the custom board buttons
+				let customButton = document.querySelectorAll('.customButton');
+				customButton.forEach(function(element){
+					element.disabled = false;
+				});
+
+				document.querySelector('.startButton').innerHTML = value;
 			}
-			document.querySelector('.startButton').innerHTML = value;
+			
 		},
 
 		getPiece : function(row , col){ // return the type of piece that's selected
@@ -96,16 +200,57 @@ let main = {
 		},
 
 		resetBoard : function(){
+			
+			main.variables.cnt = 1;
+			let element = document.querySelector('.moves');
+			element.innerHTML = '';
+
+			document.querySelector('.boardType').innerHTML = 'Normal Board - Castling Allowed';
 			// resetting the start button
-			if(main.variables.gameStatus == true){
+			if(main.variables.gameStatus == true || main.variables.specialCheckConditions){
 				document.querySelector('.startButton').innerHTML = 'START GAME';
 				document.querySelector('.startButton').classList.remove('stop');
 
 				let choice = document.querySelector('.choice');
 				choice.disabled = false;
+
+				// disabling the custom board buttons
+				let customButton = document.querySelectorAll('.customButton');
+				customButton.forEach(function(element){
+					element.disabled = false;
+				});
 			}
 
+			if(main.variables.specialCheckConditions){
+				// removing the previous check
+				this.removePreviousCheck();
+				main.variables.specialCheckConditions = false;
+			}
+
+			// setting the Custom Board Portion to default
+			main.variables.addCustomPiece = false;
+			main.variables.removeCustomPiece = false;
+			main.variables.w_kingRemoved = false;
+			main.variables.b_kingRemoved = false;
+			let ele = document.querySelector('.w_kingCustom');
+			if(ele != null){
+				ele.remove();
+			}
+			ele = document.querySelector('.b_kingCustom');
+			if(ele != null){
+				ele.remove();
+			}
+
+			let elementAdd = document.querySelector('.addCustomButton');
+			elementAdd.classList.remove('customButtonActive');
+
+			let elementRemove = document.querySelector('.removeCustomButton');
+			elementRemove.classList.remove('customButtonActive');
+
+			document.querySelector('.customInfo').innerHTML = '';
+
 			main.variables.turn = 'w';
+			document.querySelector('.turn').innerHTML = 'Turn : White';
 			this.removePreviousMove();
 			this.clearCanMove();
 			this.removePreviousSelectedCell();
@@ -260,6 +405,8 @@ let main = {
 			let prevCol = main.variables.selectedCell[1];
 			let piece = main.variables.selectedPiece;
 
+			this.updateMoveField(prevRow , prevCol , row , col , main.variables.turn);
+
 			// adding promotion condition
 			if(piece == 'b_pawn' || piece == 'w_pawn'){
 				if(piece.charAt(0) == 'b' && row == 1){
@@ -387,7 +534,6 @@ let main = {
 						else
 							main.variables.turn = 'w';
 						//----------------------------------------------
-
 						return;
 					}
 				}
@@ -1788,6 +1934,19 @@ let main = {
 			this.updateBoard();
 		},
 
+		removePreviousCheck : function(){
+			if(main.variables.previousCheck[0] != -1){ // removing the previous check
+				let x = main.variables.previousCheck[0], y = main.variables.previousCheck[1];
+
+				if((x+y)%2){
+					document.querySelector(`.row${x}.col${y}`).classList.remove('checkLight');
+				}
+				else{
+					document.querySelector(`.row${x}.col${y}`).classList.remove('checkDark');
+				}
+			}
+		},
+
 		evaluateStaleMate : function(){
 			let turn = main.variables.turn;
 			let arrForCheck = this.evaluateCheck();
@@ -1973,6 +2132,7 @@ let main = {
 
 			if(this.evaluateCheckMate()){
 				main.variables.gameStatus = false;
+				main.variables.specialCheckConditions = true;
 				let win;
 				if(main.variables.turn == 'b')
 					win = 'white';
@@ -1982,15 +2142,97 @@ let main = {
 			}
 			else if(this.evaluateDraw()){
 				main.variables.gameStatus = false;
+				main.variables.specialCheckConditions = true;
 				this.promptDraw();
 			}
 			else if(this.evaluateStaleMate()){
 				main.variables.gameStatus = false;
+				main.variables.specialCheckConditions = true;
 				this.promptStalemate();
 			}
 		},
 
+		promptCustomSelection : function(){
+			var blur = document.getElementById('blur');
+			blur.classList.toggle('active');
+			var popup = document.getElementById('customBoardPopUp');
+			popup.classList.toggle('active');
+		},
+
+		removeCustomBoardPiece : function(){
+			let popUpContinerWhite = document.querySelector('.chooseCustomWhite');
+			let popUpContinerBlack = document.querySelector('.chooseCustomBlack');
+
+			let pos = main.variables.customCell;
+			if(this.getPiece(pos[0] , pos[1]) == 'w_king'){
+				main.variables.w_kingRemoved = false;
+				popUpContinerWhite.insertAdjacentHTML("afterbegin" , `<div class = 'promotion w_kingCustom' onclick="main.methodes.addCustomBoardPiece('w_king')">&#9812;</div>`);
+			}
+			else if(this.getPiece(pos[0] , pos[1]) == 'b_king'){
+				main.variables.b_kingRemoved = false;
+				popUpContinerBlack.insertAdjacentHTML("afterbegin" , `<div class = 'promotion b_kingCustom' onclick="main.methodes.addCustomBoardPiece('b_king')">&#9818;</div>`);
+			}
+
+			this.setPiece(pos[0] , pos[1] , "*");
+			this.updateBoard();
+		},
+
+		addCustomBoardPiece : function(type){
+			var blur = document.getElementById('blur');
+			blur.classList.toggle('active');
+			var popup = document.getElementById('customBoardPopUp');
+			popup.classList.toggle('active');
+
+			let pos = main.variables.customCell;
+			this.setPiece(pos[0] , pos[1] , type);
+
+			if(type == 'w_king'){
+				document.querySelector('.w_kingCustom').remove();
+				main.variables.w_kingRemoved = true;
+			}
+			else if(type == 'b_king'){
+				document.querySelector('.b_kingCustom').remove();
+				main.variables.b_kingRemoved = true;
+			}
+
+			this.updateBoard();
+		},
+
+		updateMoveField : function(r1 , c1 , r2 , c2 , turn){
+			let element = document.querySelector('.moves');
+			let fromCell = main.variables.colEquivFile[c1] + r1;
+			let toCell = main.variables.colEquivFile[c2] + r2;
+
+			let cnt = main.variables.cnt;
+
+			if(turn == 'b'){
+				element.insertAdjacentHTML("beforeend" , `${cnt+')b-'+ fromCell+toCell}      `);
+			}
+			else{
+				element.insertAdjacentHTML("beforeend" , `${cnt+')w-'+ fromCell+toCell}      `);
+			}
+			main.variables.cnt++;
+		},
+
         cellSelected : function(row , col){
+				
+			if(main.variables.addCustomPiece){
+				if(this.getPiece(row , col) != "*")
+					return;
+				main.variables.customCell[0] = row;
+				main.variables.customCell[1] = col;
+				this.promptCustomSelection();				
+				return;
+			}
+			else if(main.variables.removeCustomPiece){
+				if(this.getPiece(row , col) == "*")
+					return;
+				main.variables.customCell[0] = row;
+				main.variables.customCell[1] = col;
+				this.removeCustomBoardPiece();
+				return;
+			}
+
 			this.removeBeautyOfCanMoveCell();
 
 			if(!main.variables.gameStatus){
@@ -2009,18 +2251,18 @@ let main = {
 				if(x == row && y == col){
 					this.clearCanMove();
 					this.moveSelectedPiece(row , col);
+					
+					// Updating the turn lable in HTML
+					if(main.variables.turn == 'b'){
+						document.querySelector('.turn').innerHTML = 'Turn : Black';
+					}
+					else{
+						document.querySelector('.turn').innerHTML = 'Turn : White';
+					}
+
 					this.removePreviousSelectedCell();
 
-					if(main.variables.previousCheck[0] != -1){ // removing the previous check
-						let x = main.variables.previousCheck[0], y = main.variables.previousCheck[1];
-
-						if((x+y)%2){
-							document.querySelector(`.row${x}.col${y}`).classList.remove('checkLight');
-						}
-						else{
-							document.querySelector(`.row${x}.col${y}`).classList.remove('checkDark');
-						}
-					}
+					this.removePreviousCheck();
 					
 					this.specialCheckAndDraw();
 					

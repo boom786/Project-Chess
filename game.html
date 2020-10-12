@@ -14,32 +14,42 @@
 <div class = 'container' id = 'blur'>
 
     <!-- MENU -->
-    <div class="card">
-        
-        <div class="menuContainer">
-          <button class = 'startButton' onclick="main.methodes.startGame()">START GAME</button>
-          <br>
-          <div>
-            <label class = "against">Against</label>
-            <select name="hall" class="choice">
-                <option class = 'value'>Human</option>
-                <option class = 'value'>Computer</option>
-            </select>
-          </div>
-          <br>
-          <div>
-              <label class = 'turn'>Turn : White</label>
-          </div>
-          <div>
-          <button class = 'modifyButton' onclick="main.methodes.resetBoard()">Reset Board</button>
-          </div>
-          <br>
-          <div>
-              <label class = "custom">Create Custom Position</label>
-          </div>
-          <button class = 'modifyButton'>Add Piece</button>  <button class = 'modifyButton'>Remove Piece</button>
+
+    <div>
+        <div class = 'boardType'>Normal Board - Castling Allowed</div>
+        <div class="card">
+            
+            <div class="menuContainer">
+            <button class = 'startButton' onclick="main.methodes.startGame()">START GAME</button>
+            <br>
+            <div>
+                <label class = "against">Against</label>
+                <select name="hall" class="choice">
+                    <option class = 'value'>Human</option>
+                    <option class = 'value'>Computer</option>
+                </select>
+            </div>
+            <br>
+            <div>
+                <label class = 'turn'>Turn : White</label>
+            </div>
+            <div>
+            <button class = 'modifyButton' onclick="main.methodes.resetBoard()">Reset Board</button>
+            </div>
+            <br>
+            <div>
+                <label class = "custom">Create Custom Position</label>
+            </div>
+            <button class = 'modifyButton customButton addCustomButton' onclick="main.methodes.addPieceToBoard()">Add Piece</button>  <button class = 'modifyButton customButton removeCustomButton' onclick="main.methodes.removePieceFromBoard()">Remove Piece</button>
+            <br><br>
+            <div>
+                <label class = 'customInfo' style="color: rgb(199, 17, 17);"></label>
+            </div>
+            </div>
         </div>
     </div>
+
+    <!-- ------------------------------------------------------------------------------------- -->
 
     <div class="chessboard">
         <!--   8th  -->
@@ -143,7 +153,10 @@
         
     </div>
 
-    <textarea class = 'moves' disabled>This is a text area for moves to be displayed</textarea>
+    <div class = 'movesContainer'>
+        <label class = 'moveHeading'>MOVES MADE</label>
+        <textarea class = 'moves' disabled></textarea>
+    </div>
 </div>
 
 <!-- PROMOTION-POPUP -->
@@ -172,19 +185,39 @@
 <!-- for Check-Mate -->
 <div id = 'checkMate'>
     <h1 class = 'checkMate'></h1>
-    <button type="button" class="btn btn-primary" onclick="main.methodes.promptCheckMate()">OK</button>
+    <button type="button" class="ok" onclick="main.methodes.promptCheckMate()">OK</button>
 </div>
 
 <!-- for Draw -->
 <div id = 'draw'>
     <h1 class = 'draw'></h1>
-    <button type="button" class="btn btn-primary" onclick="main.methodes.promptDraw()">OK</button>
+    <button type="button" class="ok" onclick="main.methodes.promptDraw()">OK</button>
 </div>
 
 <!-- Stalemate -->
 <div id = 'stalemate'>
     <h1 class = 'stalemate'></h1>
-    <button type="button" class="btn btn-primary" onclick="main.methodes.promptStalemate()">OK</button>
+    <button type="button" class="ok" onclick="main.methodes.promptStalemate()">OK</button>
+</div>
+
+<!-- Custome Board selection -->
+<div id = 'customBoardPopUp'>
+    <h1>Choose the piece you want to Add to this cell !</h1>
+        <div class = 'chooseFrom chooseCustomWhite'>
+            <div class = 'promotion' onclick="main.methodes.addCustomBoardPiece('w_queen')">&#9813;</div>
+            <div class = 'promotion' onclick="main.methodes.addCustomBoardPiece('w_bishop')">&#9815;</div>
+            <div class = 'promotion' onclick="main.methodes.addCustomBoardPiece('w_knight')">&#9816;</div>
+            <div class = 'promotion' onclick="main.methodes.addCustomBoardPiece('w_rook')">&#9814;</div>
+            <div class = 'promotion' onclick="main.methodes.addCustomBoardPiece('w_pawn')">&#9817;</div>
+        </div>
+        <div class = 'chooseFrom chooseCustomBlack'>
+            <div class = 'promotion' onclick="main.methodes.addCustomBoardPiece('b_queen')">&#9819;</div>
+            <div class = 'promotion' onclick="main.methodes.addCustomBoardPiece('b_bishop')">&#9821;</div>
+            <div class = 'promotion' onclick="main.methodes.addCustomBoardPiece('b_knight')">&#9822;</div>
+            <div class = 'promotion' onclick="main.methodes.addCustomBoardPiece('b_rook')">&#9820;</div>
+            <div class = 'promotion' onclick="main.methodes.addCustomBoardPiece('b_pawn')">&#9823;</div>
+        </div>
+    <button type="button" class="cancle" onclick="main.methodes.promptCustomSelection()">Cancle</button>
 </div>
 
 <!-- <script src = "https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> -->
