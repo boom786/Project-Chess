@@ -84,7 +84,7 @@ body{
 
       font-size: large;
       font-weight: bold;
-      margin: 20px auto;
+      margin: 10px auto;
       display: auto;    
   }
 
@@ -93,7 +93,7 @@ body{
     font-weight: bold;  
   }
 
-  .against{
+  .against.custom{
     font-size: medium;
     font-weight: bold;
   }

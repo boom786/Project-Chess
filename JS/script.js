@@ -41,17 +41,32 @@ let main = {
 		startGame : function(){ // it starts the game and also stopes the game 
 			main.variables.gameStatus = !main.variables.gameStatus;
 
-			let value = 'STOP GAME';
+			let choice = document.querySelector('.choice');
+
+			let value = 'ABORT GAME';
 			if(main.variables.gameStatus == false){
 				value = 'START GAME';
 			}
 			
-			if(value == 'STOP GAME')
+			if(value == 'ABORT GAME'){
 				document.querySelector('.startButton').classList.add('stop');
-			else	
+				// Setting the opponent as a player or a computer
+				let index = choice.selectedIndex;
+				if(index == 1){
+					main.variables.AIplays = true;
+				}
+				else{
+					main.variables.AIplays = false;
+				}
+
+				choice.disabled = true;
+			}
+			else{	
 				document.querySelector('.startButton').classList.remove('stop');
+				this.resetBoard();
+				choice.disabled = false;
+			}
 			document.querySelector('.startButton').innerHTML = value;
-			
 		},
 
 		getPiece : function(row , col){ // return the type of piece that's selected
@@ -85,6 +100,9 @@ let main = {
 			if(main.variables.gameStatus == true){
 				document.querySelector('.startButton').innerHTML = 'START GAME';
 				document.querySelector('.startButton').classList.remove('stop');
+
+				let choice = document.querySelector('.choice');
+				choice.disabled = false;
 			}
 
 			main.variables.turn = 'w';
