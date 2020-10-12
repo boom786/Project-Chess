@@ -6,11 +6,37 @@
     <link rel="stylesheet" href="./CSS/board.css">
     <link rel="stylesheet" href="./CSS/moves.css">
     <link rel="stylesheet" href="./CSS/pop-up.css">
+    <link rel="stylesheet" href="./CSS/menu.css">
 
 </head>
 <body>
-    
+     
 <div class = 'container' id = 'blur'>
+
+    <!-- MENU -->
+    <div class="card">
+        
+        <div class="menuContainer">
+          <button class = 'startButton'>START</button>
+          <br><br>
+          <div>
+            <label class = "against">Against</label>
+            <select name="hall" class="choice">
+                <option class = 'value'>Human</option>
+                <option class = 'value'>Computer</option>
+            </select>
+          </div>
+          <br>
+          <div>
+              <label class = 'turn'>Turn : White</label>
+          </div>
+          <div>
+          <button class = 'modifyButton'>Reset Board</button>
+          </div>
+          <button class = 'modifyButton'>Add Piece</button>  <button class = 'modifyButton'>Remove Piece</button>
+        </div>
+    </div>
+
     <div class="chessboard">
         <!--   8th  -->
         <div class="column">8</div>
@@ -112,6 +138,8 @@
         <div class="row">h</div>
         
     </div>
+
+    <textarea class = 'moves' disabled>This is a text area for moves to be displayed</textarea>
 </div>
 
 <!-- PROMOTION-POPUP -->
@@ -158,6 +186,7 @@
 <!-- <script src = "https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> -->
 
 <script src = "./JS/script.js"></script>
+<script src = "./JS/menu.js"></script>
 
 </body>
 </html>

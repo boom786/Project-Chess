@@ -1,7 +1,10 @@
 .chessboard{
+    /* float: left; */
     width: 679px;
     height: 679px;
-    margin: 15px auto;
+    margin-left: 50px;
+    margin-right: 50px;
+    /* margin: 15px auto; */
 }
 
 .column{
