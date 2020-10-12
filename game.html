@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="./CSS/board.css">
     <link rel="stylesheet" href="./CSS/moves.css">
     <link rel="stylesheet" href="./CSS/pop-up.css">
+
 </head>
 <body>
     
@@ -111,29 +112,12 @@
         <div class="row">h</div>
         
     </div>
-    <a href="#" onclick="toggle()">Read more</a>
 </div>
-
-
-<!-- POP-UP -->
-<div id = 'popup'>
-    <h1>HELLO !</h1>
-    <a href="#" onclick="toggle()">close</a>
-</div>
-
-<script>
-    function toggle(){
-        var blur = document.getElementById('blur');
-        blur.classList.toggle('active');
-        var popup = document.getElementById('popup');
-        popup.classList.toggle('active');
-    }
-</script>
 
 <!-- PROMOTION-POPUP -->
 <!-- for black -->
 <div id = 'b_promotion'>
-    <h1>Choose the piece you want to promote !</h1>
+    <h1 class = 'b_promotion'>Choose the piece you want to promote !</h1>
     <div class = 'chooseFrom'>
         <div class = 'promotion' onclick="main.methodes.closePromoteBlack('b_queen')">&#9819;</div>
         <div class = 'promotion' onclick="main.methodes.closePromoteBlack('b_bishop')">&#9821;</div>
@@ -151,6 +135,24 @@
         <div class = 'promotion' onclick="main.methodes.closePromoteWhite('w_knight')">&#9816;</div>
         <div class = 'promotion' onclick="main.methodes.closePromoteWhite('w_rook')">&#9814;</div>
     </div>
+</div>
+
+<!-- for Check-Mate -->
+<div id = 'checkMate'>
+    <h1 class = 'checkMate'></h1>
+    <button type="button" class="btn btn-primary" onclick="main.methodes.promptCheckMate()">OK</button>
+</div>
+
+<!-- for Draw -->
+<div id = 'draw'>
+    <h1 class = 'draw'></h1>
+    <button type="button" class="btn btn-primary" onclick="main.methodes.promptDraw()">OK</button>
+</div>
+
+<!-- Stalemate -->
+<div id = 'stalemate'>
+    <h1 class = 'stalemate'></h1>
+    <button type="button" class="btn btn-primary" onclick="main.methodes.promptStalemate()">OK</button>
 </div>
 
 <!-- <script src = "https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> -->

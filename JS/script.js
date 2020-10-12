@@ -2,7 +2,8 @@ let main = {
 
     variables: {
 	  gameStatus : false, // shows wether the game is still running or the game is over
-      turn : 'w', // shows which player's urn is it
+	  turn : 'w', // shows which player's urn is it
+	  AIplays : true, // tells wether the computer is playing or not
 	  selectedPiece : '', // stores the seleced piece on board
 	  selectedCell : new Array(2), // stores the cell selected
 	  previousMove : new Array(2), // stores the cells used in previous move
@@ -198,6 +199,7 @@ let main = {
 				if(piece.charAt(0) == 'b' && row == 1){
 					main.variables.promotionPlace[0] = row;
 					main.variables.promotionPlace[1] = col;
+
 					this.promoteBlack();
 				}
 				else if(piece.charAt(0) == 'w' && row == 8){
@@ -1813,6 +1815,11 @@ let main = {
 		},
 
 		promoteBlack : function(){
+			if(main.variables.AIplays)
+				document.querySelector('.b_promotion').innerHTML = 'You have the liberty to choose a promotion piece for black';
+			else
+				document.querySelector('.b_promotion').innerHTML = 'Choose the piece you want to promote !'; 
+
 			var blur = document.getElementById('blur');
 			blur.classList.toggle('active');
 			var popup = document.getElementById('b_promotion');
@@ -1822,11 +1829,13 @@ let main = {
 		closePromoteBlack : function(type){
 			this.setPiece(main.variables.promotionPlace[0] , main.variables.promotionPlace[1] , type);
 			this.updateBoard();
-			this.specialCheckAndDraw();
+		
 			var blur = document.getElementById('blur');
 			blur.classList.toggle('active');
 			var popup = document.getElementById('b_promotion');
 			popup.classList.toggle('active');
+		
+			this.specialCheckAndDraw();
 		},
 
 		promoteWhite : function(){
@@ -1839,10 +1848,45 @@ let main = {
 		closePromoteWhite : function(type){
 			this.setPiece(main.variables.promotionPlace[0] , main.variables.promotionPlace[1] , type);
 			this.updateBoard();
-			this.specialCheckAndDraw();
 			var blur = document.getElementById('blur');
 			blur.classList.toggle('active');
 			var popup = document.getElementById('w_promotion');
+			popup.classList.toggle('active');
+			this.specialCheckAndDraw();
+		},
+
+		promptCheckMate : function(){ // popup window with checkmate
+			let message = 'WOW ! checkmate, Black is victorious';;
+			if(main.variables.turn == 'b'){
+				message = 'WOW ! checkmate, White is victorious';
+			}
+			document.querySelector('.checkMate').innerHTML = message;
+
+			var blur = document.getElementById('blur');
+			blur.classList.toggle('active');
+			var popup = document.getElementById('checkMate');
+			popup.classList.toggle('active');
+		},
+
+		promptDraw : function(){
+			let message = `It's a draw !`;;
+			
+			document.querySelector('.draw').innerHTML = message;
+
+			var blur = document.getElementById('blur');
+			blur.classList.toggle('active');
+			var popup = document.getElementById('draw');
+			popup.classList.toggle('active');
+		},
+
+		promptStalemate : function(){
+			let message = `Oop's Stalemate !!`;
+			
+			document.querySelector('.stalemate').innerHTML = message;
+
+			var blur = document.getElementById('blur');
+			blur.classList.toggle('active');
+			var popup = document.getElementById('stalemate');
 			popup.classList.toggle('active');
 		},
 
@@ -1868,15 +1912,15 @@ let main = {
 					win = 'white';
 				else
 					win = 'black';
-				alert('Checkmate ' + win + ' Wins.!');
+				this.promptCheckMate();
 			}
 			else if(this.evaluateDraw()){
 				main.variables.gameStatus = false;
-				alert(`it's a draw..!`);
+				this.promptDraw();
 			}
 			else if(this.evaluateStaleMate()){
 				main.variables.gameStatus = false;
-				alert('Stale Mate !');
+				this.promptStalemate();
 			}
 		},
 
@@ -1914,6 +1958,112 @@ let main = {
 					
 					this.specialCheckAndDraw();
 					
+					//computer------------------------------------------------------------------------------------
+					if(main.variables.AIplays && main.variables.turn == 'b' && main.variables.gameStatus == true){
+						let validCell = [];
+						let ar = [];
+						for(let i = 1 ; i <= 8 ; i++){
+							for(let j = 1 ; j <= 8 ; j++){
+								if(this.getPiece(i , j).charAt(0) == main.variables.turn){
+									main.variables.selectedCell[0] = i;
+									main.variables.selectedCell[1] = j;
+									main.variables.selectedPiece = this.getPiece(i , j);
+									switch(this.getPiece(i , j)){
+										case "b_knight" : // fall through (i.e both "b_knight" and "w_knight" will execute same function)
+										case "w_knight" :{ // if a white or black knoght is seleced
+											// remove the previously selected canMove cells
+											this.clearCanMove();
+						
+											// getting all the cells where the currently selected knight can move
+											this.canMoveKnight(i , j);
+										
+										}break;
+						
+										//-------------------------------------------------------------------------------------------------------------
+						
+										case "w_pawn" : // fall through
+										case "b_pawn" :{
+											// remove the previously selected canMove cells
+											this.clearCanMove();
+						
+											// getting all the cells where the currently selected pawn can move
+											this.canMovePawn(i , j);
+											
+										}break;
+										
+										//-------------------------------------------------------------------------------------------------------------
+						
+										case "w_rook" : // fall through
+										case "b_rook" :{
+											// remove the previously selected canMove cells
+											this.clearCanMove();
+						
+											// getting all the cells where the currently selected rook can move
+											this.canMoveRook(i , j);
+											
+										}break;
+						
+										//-------------------------------------------------------------------------------------------------------------
+						
+										case "w_bishop" : // fall through
+										case "b_bishop" :{
+											// remove the previously selected canMove cells
+											this.clearCanMove();
+						
+											// getting all the cells where the currently selected bishop can move
+											this.canMoveBishop(i , j);
+											
+										}break;
+						
+										//-------------------------------------------------------------------------------------------------------------
+						
+										case "w_queen" : // fall through
+										case "b_queen" :{
+											// remove the previously selected canMove cells
+											this.clearCanMove();
+						
+											// getting all the cells where the currently selected queen can move
+											this.canMoveQueen(i , j);
+											
+										}break;
+						
+										//-------------------------------------------------------------------------------------------------------------
+						
+										case "w_king" : // fall through
+										case "b_king" :{
+											// remove the previously selected canMove cells
+											this.clearCanMove();
+						
+											// getting all the cells where the currently selected king can move
+											this.canMoveKing(i , j);
+											;
+										}break;
+						
+										//-------------------------------------------------------------------------------------------------------------
+						
+										default :{
+											this.clearCanMove();
+										}
+									}
+									if(main.variables.canMove.length != 0){
+										ar.push([i , j]);
+
+										let value = Math.floor(Math.random() * main.variables.canMove.length);
+										validCell.push(main.variables.canMove[value]);
+									}
+								}
+							}
+						}
+						
+						let value = Math.floor(Math.random() * validCell.length);
+						//console.log(ar , value);
+						//console.log(ar[value][0] , ar[value][1]);
+						this.cellSelected(ar[value][0] , ar[value][1]);
+						//console.log(validCell[value][0] , validCell[value][1]);
+						this.cellSelected(validCell[value][0] , validCell[value][1]);
+					}
+					//--------------------------------------------------------------------------------------------
+
 					return;
 				}
 			}
