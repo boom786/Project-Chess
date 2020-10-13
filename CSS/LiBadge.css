@@ -4,7 +4,8 @@
     align-items: center;
     padding: 100px;
 
-    background: url(../Images/webpage-background.jpg) center center no-repeat;
+    background: url(../Images/stars.jpeg) center center no-repeat;
+    /* background: url(../Images/webpage-background.jpg) center center no-repeat; */
     background-size: cover;
 }
 

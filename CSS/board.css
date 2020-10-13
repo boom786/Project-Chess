@@ -37,10 +37,22 @@
     height: 75px;
     background-color: #a98549;
     font-size: 50px;
-    text-align: center;
+    display: flex;
+    /* text-align: center;
     display: table-cell;
     vertical-align: middle;
-    line-height: 75px;
+    line-height: 75px; */
+}
+
+.dark img{
+    margin: auto;
+    width: 70%;
+    height: 70%;
+
+    -webkit-user-drag: none;
+    -khtml-user-drag: none;
+    -moz-user-drag: none;
+    -o-user-drag: none;
 }
 
 .light{
@@ -49,10 +61,22 @@
     height: 75px;
     background-color: #f0d2b4;
     font-size: 50px;
-    text-align: center;
+    display: flex;
+    /* text-align: center;
     display: table-cell;
     vertical-align: middle;
-    line-height: 75px;
+    line-height: 75px; */
+}
+
+.light img{
+    margin: auto;
+    width: 70%;
+    height: 70%;
+
+    -webkit-user-drag: none;
+    -khtml-user-drag: none;
+    -moz-user-drag: none;
+    -o-user-drag: none;
 }
 
 .row8{

@@ -1,11 +1,21 @@
 .selectedCellDark{
     background-color: #999966;
-    font-size: 70px;
+    /* font-size: 70px; */
+}
+
+.selectedCellDark img{
+    width: 85%;
+    height: 85%;
 }
 
 .selectedCellLight{
     background-color: #99b857;
-    font-size: 70px;
+    /* font-size: 70px; */
+}
+
+.selectedCellLight img{
+    width: 85%;
+    height: 85%;
 }
 
 /* ----------------------------------------------------------------------- */
@@ -59,18 +69,38 @@
 
 .canMoveDarkCapture{
     background-color: #c02f1a;
-}
+}   
 
 .darkCapture{
+    display: flex;
+    width: 100%;
+    height: 100%;
+
     border-radius: 30px;
     background-color: #a98549;
+}
+
+.darkCapture img{
+    margin: auto;
+    width: 70%;
+    height: 70%;
 }
 
 /* ----------------------------------------------------------------------- */
 
 .lightCapture{
+    display: flex;
+    width: 100%;
+    height: 100%;
+
     border-radius: 30px;
     background-color: #f0d2b4;
+}
+
+.darkCapture img{
+    margin: auto;
+    width: 70%;
+    height: 70%;
 }
 
 .canMoveLightCapture{
