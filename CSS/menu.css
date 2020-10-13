@@ -1,5 +1,5 @@
 body{
-    background-color: #edebe9;
+    background-color: #183d5d !important;
 
     -webkit-touch-callout: none;
     -webkit-user-select: none;
@@ -21,11 +21,11 @@ body{
 .card {
     text-align: center;
 
-    background-color: rgba(243, 243, 243, 0.993);
+    background-color: rgba(243, 243, 243, 0.698);
 
     width: 350px;
     height: 460px; 
-    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+    box-shadow: 0 2px 15px 0 rgba(255, 255, 255, 0.972);
     transition: 0.3s;
     border-radius: 5px; /* 5px rounded corners */
   }
@@ -131,7 +131,8 @@ body{
 
   .movesContainer{
     display: block;
-    width: 150px;  
+    width: 150px; 
+    box-shadow: 0 2px 15px 0 rgba(255, 255, 255, 0.972);
   }
 
   .moveHeading{
