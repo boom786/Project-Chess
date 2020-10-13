@@ -14,3 +14,17 @@
     background-color: black;
     box-shadow: 0 2px 20px 0 rgba(236, 233, 233, 0.4);
 }
+
+.contributors{
+    margin: 0 auto;
+    width: 100%;
+    float: left;
+    text-align: center;
+    
+}
+
+.badgeCollection{
+    margin: 0 auto;
+    width: 100%;
+    float: left;
+}

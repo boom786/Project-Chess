@@ -139,7 +139,7 @@ body{
       display: block;
       width: 150px;
       text-align: center;
-      background-color: khaki;
+      background-color: rgb(240, 230, 140, 0.798);
   }
 
   .moves{
@@ -147,7 +147,7 @@ body{
       width: 150px;
       height: 400px;
       padding: 20px;
-      background-color: khaki;
+      background-color: rgb(240, 230, 140, 0.798);
 
       white-space: pre-wrap;
   }
