@@ -221,7 +221,7 @@ let main = {
 				});
 			}
 
-			if(main.variables.specialCheckConditions){
+			if(main.variables.specialCheckConditions || this.evaluateCheck()[0] != -1){
 				// removing the previous check
 				this.removePreviousCheck();
 				main.variables.specialCheckConditions = false;
