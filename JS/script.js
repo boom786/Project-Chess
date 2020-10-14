@@ -1,3 +1,5 @@
+import {generateMoveByFen} from './generateMove.js';
+
 let main = {
 
     variables: {
@@ -336,6 +338,7 @@ let main = {
 			}
 
 			this.resetBoard();
+			console.log(main.variables.board);
 		}, 
 
 		clearCanMove : function(){ // removing all the revious cells where a pice could be moved
