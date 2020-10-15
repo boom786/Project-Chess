@@ -2,6 +2,7 @@
 let main = {
  
     variables: {
+	  AIThinking : false, // tells wethere the AI is currently thinking or not, so that the selection for computer piece can be turned off
 	  whitePromotionFlag : false , // tells wether the white was promoted or not 	
 	  cnt : 1 , // tells the number of moves till now
 	  specialCheckConditions : false , // extra parameter to check wether the game ended by checkmate, draw or something else.
@@ -357,7 +358,6 @@ let main = {
 			}
 
 			this.resetBoard();
-			console.log(main.variables.board);
 		}, 
 
 		clearCanMove : function(){ // removing all the revious cells where a pice could be moved
@@ -2260,8 +2260,11 @@ let main = {
 		},
 
 		computerMove : async function(){
-			await this.delay(2000)
+
 			if(main.variables.AIplays && main.variables.turn == 'b' && main.variables.gameStatus == true){
+				main.variables.AIThinking = true; // preventing the user to move the AI piece while the AI is thinking
+				await this.delay(2000)
+
 				let validCell = [];
 				let ar = [];
 
@@ -2379,10 +2382,12 @@ let main = {
 				//console.log(ar[value][0] , ar[value][1]);
 
 				if(bestMove[0] != -1){
+					main.variables.AIThinking = false; // so that AI cn make a move
 					this.cellSelected(bestMove[0] , bestMove[1]);
 					this.cellSelected(bestMove[2] , bestMove[3]);
 				}
 				else{
+					main.variables.AIThinking = false; // so that AI can make a move
 					this.cellSelected(ar[value][0] , ar[value][1]);
 					//console.log(validCell[value][0] , validCell[value][1]);
 					this.cellSelected(validCell[value][0] , validCell[value][1]);
@@ -2391,7 +2396,9 @@ let main = {
 		},
 
         cellSelected : function(row , col){
-				
+			if(main.variables.AIThinking){ // the AI is currently thinking, ignore any click from the user
+				return;
+			}
 			if(main.variables.addCustomPiece){
 				if(this.getPiece(row , col) != "*")
 					return;
