@@ -1,7 +1,6 @@
-import {generateMoveByFen} from './generateMove.js';
 
 let main = {
-
+ 
     variables: {
 	  whitePromotionFlag : false , // tells wether the white was promoted or not 	
 	  cnt : 1 , // tells the number of moves till now
