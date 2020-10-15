@@ -66,7 +66,27 @@ let main = {
 		6 : 'f',
 		7 : 'g',
 		8 : 'h',
-	  }
+	  },
+
+	  getValue : {
+        w_pawn : 10,
+        b_pawn : -10,
+
+        w_knight : 30,
+        b_knight : -30,
+
+        w_bishop : 30,
+        b_bishop : -30,
+
+        w_rook : 50,
+        b_rook : -50,
+
+        w_queen : 90,
+        b_queen : -90,
+
+        w_king : 900,
+        b_king : -900,
+	},
 
     },
 
@@ -452,20 +472,16 @@ let main = {
 					if(row - prevRow == 2){
 						main.variables.w_EnPassent[col] = true;
 					}
-					else{
-						for(let i = 1 ; i <= 8 ; i++){
-							main.variables.b_EnPassent[i] = false;
-						}
+					for(let i = 1 ; i <= 8 ; i++){
+						main.variables.b_EnPassent[i] = false;
 					}
 				}
 				else{
 					if(prevRow - row == 2){
 						main.variables.b_EnPassent[col] = true;
 					}
-					else{
-						for(let i = 1 ; i <= 8 ; i++){
-							main.variables.w_EnPassent[i] = false;
-						}
+					for(let i = 1 ; i <= 8 ; i++){
+						main.variables.w_EnPassent[i] = false;
 					}
 				}
 			}
@@ -2237,6 +2253,11 @@ let main = {
 			if(main.variables.AIplays && main.variables.turn == 'b' && main.variables.gameStatus == true){
 				let validCell = [];
 				let ar = [];
+
+				let valueCaptured = 0;
+				let bestMove = new Array(4);
+				bestMove[0] = bestMove[1] = bestMove[2] = bestMove[3] = -1;
+
 				for(let i = 1 ; i <= 8 ; i++){
 					for(let j = 1 ; j <= 8 ; j++){
 						if(this.getPiece(i , j).charAt(0) == main.variables.turn){
@@ -2325,6 +2346,18 @@ let main = {
 
 								let value = Math.floor(Math.random() * main.variables.canMove.length);
 								validCell.push(main.variables.canMove[value]);
+
+								// getting the most value that can be captured
+								main.variables.canMove.forEach(function(cell){
+									let piece = main.methodes.getPiece(cell[0] , cell[1]);
+									if(piece != "*" && main.variables.getValue[piece] > valueCaptured){
+										valueCaptured = main.variables.getValue[piece];
+										bestMove[0] = i;
+										bestMove[1] = j;
+										bestMove[2] = cell[0];
+										bestMove[3] = cell[1];
+									}
+								});
 							}
 						}
 					}
@@ -2333,9 +2366,16 @@ let main = {
 				let value = Math.floor(Math.random() * validCell.length);
 				//console.log(ar , value);
 				//console.log(ar[value][0] , ar[value][1]);
-				this.cellSelected(ar[value][0] , ar[value][1]);
-				//console.log(validCell[value][0] , validCell[value][1]);
-				this.cellSelected(validCell[value][0] , validCell[value][1]);
+
+				if(bestMove[0] != -1){
+					this.cellSelected(bestMove[0] , bestMove[1]);
+					this.cellSelected(bestMove[2] , bestMove[3]);
+				}
+				else{
+					this.cellSelected(ar[value][0] , ar[value][1]);
+					//console.log(validCell[value][0] , validCell[value][1]);
+					this.cellSelected(validCell[value][0] , validCell[value][1]);
+				}
 			}
 		},
 

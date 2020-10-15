@@ -1,5 +1,5 @@
 body{
-    background-color: #183d5d !important;
+    /* background-color: #183d5d !important; */
 
     -webkit-touch-callout: none;
     -webkit-user-select: none;
@@ -24,7 +24,7 @@ body{
     background-color: rgba(243, 243, 243, 0.698);
 
     width: 350px;
-    height: 460px; 
+    height: 510px; 
     box-shadow: 0 2px 15px 0 rgba(255, 255, 255, 0.972);
     transition: 0.3s;
     border-radius: 5px; /* 5px rounded corners */
@@ -152,6 +152,44 @@ body{
       white-space: pre-wrap;
   }
 
- 
+  .repoButton{
+    width: 130px;
+    height: 40px;
+    font-size: large;
+    font-weight: bold;
+    background-color: rgb(148, 164, 173); 
+    float: left;
+    display: auto;
+    border-radius: 5px;
+    margin-right: 10px;
+    margin-left: 5px;
+
+    /* click effect */
+    cursor: pointer; 
+    outline: none; 
+    box-shadow: 2px 0px 5px 1px;
+    box-shadow:  rgba(126, 125, 125, 0.24); 
+  }
+
+
+  .repoButton:active{ 
+    box-shadow: 2px 0px 5px 1px;
+    box-shadow:  rgba(126, 125, 125, 0.24); 
+    transform: translateY(4px); 
+    /* Moving button 4px to y-axis */ 
+  }
+
+  .gitHub{
+    margin: 20px auto;
+    display: auto;
+  }
+
+  .gitHub img{
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-bottom: 7px;
+    /* margin-right: 100px; */
+  }
 
   /* Transitions for selece menue ------------------------------------- */
