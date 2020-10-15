@@ -2251,7 +2251,16 @@ let main = {
 			main.variables.cnt++;
 		},
 
-		computerMove : function(){
+		delay : (ms) => {
+			return new Promise((resolve, reject) => {
+			  setTimeout(() => {
+				resolve(ms);
+			  }, ms);
+			});
+		},
+
+		computerMove : async function(){
+			await this.delay(2000)
 			if(main.variables.AIplays && main.variables.turn == 'b' && main.variables.gameStatus == true){
 				let validCell = [];
 				let ar = [];
