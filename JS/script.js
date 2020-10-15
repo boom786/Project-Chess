@@ -43,8 +43,8 @@ let main = {
         // b_rook: '&#9820;',
 		// b_pawn: '&#9823;',
 
-		w_king: `<img src="../Images/chessPieces/white-king.png" alt="" />`,
-		w_queen: `<img src="../Images/chessPieces/white-queen.png" alt="" />`,
+		w_king: `<img src="./Images/chessPieces/white-king.png" alt="" />`,
+		w_queen: `<img src="./Images/chessPieces/white-queen.png" alt="" />`,
 		w_bishop: `<img src="../Images/chessPieces/white-bishop.png" alt="" />`,
 		w_knight: `<img src="../Images/chessPieces/white-knight.png" alt="" />`,
 		w_rook: `<img src="../Images/chessPieces/white-rook.png" alt="" />`,
