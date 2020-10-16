@@ -94,3 +94,27 @@
 .col8{
     border-right: 2px solid #333;
 } 
+
+.fenLabel{
+    margin-left: 28px;
+    font-weight: bold;
+}
+
+.fenInput{
+    margin-left: 5px;
+    width: 590px;
+    height: 30px;
+
+    font-weight: bold;
+    text-align: center;
+    font-size: medium;
+}
+
+.fenContainer{
+
+    text-align: center;
+    display: table-cell;
+    vertical-align: middle; 
+    width: 679px;
+    height: 75px;
+}

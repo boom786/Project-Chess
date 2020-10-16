@@ -234,6 +234,65 @@ let main = {
 					}
 				}
 			}
+
+			let fen = this.generateFen();
+
+			document.querySelector('.fenInput').value = fen;
+		},
+
+		generateFen : function(){
+			let fen = '';
+			for(let row = 1 ; row <= 8 ; row++){
+				let rowFen = '';
+				let cnt = 0;
+				for(let col = 1 ; col <= 8 ; col++){
+					let piece = this.getPiece(row , col);
+					if(piece == "*"){
+						cnt++;
+					}
+					else{
+						if(cnt != 0){
+							rowFen += cnt;
+							cnt = 0;
+						}
+
+						switch(piece){
+							case 'b_pawn': rowFen += 'p';break;
+							case 'w_pawn': rowFen += 'P';break;
+
+							case 'b_rook': rowFen += 'r';break;
+							case 'w_rook': rowFen += 'R';break;
+
+							case 'b_bishop': rowFen += 'b';break;
+							case 'w_bishop': rowFen += 'B';break;
+
+							case 'b_knight': rowFen += 'n';break;
+							case 'w_knight': rowFen += 'N';break;
+
+							case 'b_queen': rowFen += 'q';break;
+							case 'w_queen': rowFen += 'Q';break;
+
+							case 'b_king': rowFen += 'k';break;
+							case 'w_king': rowFen += 'K';break;
+						}
+					}
+				}
+
+				if(cnt != 0){
+					rowFen += cnt;
+				}
+
+				if(fen == ''){
+					fen = rowFen;
+				}
+				else{
+					fen = rowFen + '/' + fen;
+				}
+			}
+
+			fen = fen + ' b - 1 1'; 
+
+			return fen;
 		},
 
 		resetBoard : function(){
